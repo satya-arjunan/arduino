@@ -9,6 +9,7 @@ int Left_motor_en = 6;
 
 int orientation = 0;
 Gaussian gaussian = Gaussian();
+int control = 150;//PWM control speed
 
 void setup()
 {
