@@ -68,6 +68,14 @@ void run_speed(int speed_val)
 
 }
 
+void brake()         //stop
+{
+  digitalWrite(Left_motor_back, LOW);
+  digitalWrite(Left_motor_go, LOW);
+  digitalWrite(Right_motor_go, LOW);
+  digitalWrite(Right_motor_back, LOW);
+}
+
 void orient(int new_orientation) {
   int rotation = new_orientation-orientation;
   if (rotation < 0) {
