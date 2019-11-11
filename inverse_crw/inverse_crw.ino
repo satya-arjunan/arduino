@@ -1,7 +1,7 @@
 #include "./Gaussian.h"
 
-int Left_motor_back = 7; 
-int Left_motor_go = 8; 
+int Left_motor_back = 8; 
+int Left_motor_go = 7; 
 int Right_motor_go = 9; 
 int Right_motor_back = 10; 
 int Right_motor_en = 5; 
@@ -147,5 +147,5 @@ void neutrophil_brownian() {
 
 
 void loop() {
-  neutrophil_inverse_crw();
+  neutrophil_brownian();
 }
