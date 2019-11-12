@@ -1,10 +1,10 @@
 #include "./Gaussian.h"
 
-int Left_motor_back = 8; 
+int Left_motor_back = 5; 
 int Left_motor_go = 7; 
-int Right_motor_go = 9; 
-int Right_motor_back = 10; 
-int Right_motor_en = 5; 
+int Right_motor_back = 2; 
+int Right_motor_go = 4; 
+int Right_motor_en = 3; 
 int Left_motor_en = 6; 
 
 int orientation = 0;
@@ -28,22 +28,22 @@ void spin_right()
   digitalWrite(Right_motor_go, LOW);  // right motor back off
   digitalWrite(Right_motor_back, HIGH);
   // Pulse Width Modulation(0~255) control speed
-  analogWrite(Right_motor_back, control);
+  analogWrite(Right_motor_en, control);
   digitalWrite(Left_motor_go, HIGH); // left motor go ahead
   digitalWrite(Left_motor_back, LOW);
   // Pulse Width Modulation(0~255) control speed
-  analogWrite(Left_motor_go, control);
+  analogWrite(Left_motor_en, control);
 }
 
 void spin_left()
 {
   digitalWrite(Right_motor_go, HIGH);	// right motor go ahead
   digitalWrite(Right_motor_back, LOW);
-  analogWrite(Right_motor_go, control);
+  analogWrite(Right_motor_en, control);
   digitalWrite(Left_motor_go, LOW);  // left motor back off
   digitalWrite(Left_motor_back, HIGH);
   //PWM--Pulse Width Modulation(0~255) control speed
-  analogWrite(Left_motor_back, control);
+  analogWrite(Left_motor_en, control);
 }
 
 void spin_right_angle(int angle) {
@@ -60,11 +60,12 @@ void run_speed(int speed_val)
 {
   digitalWrite(Right_motor_go, HIGH);
   digitalWrite(Right_motor_back, LOW);
-  analogWrite(Right_motor_go, speed_val);
+  analogWrite(Right_motor_en, speed_val);
 
   digitalWrite(Left_motor_go, HIGH);
   digitalWrite(Left_motor_back, LOW);
-  analogWrite(Left_motor_go, speed_val);
+  analogWrite(Left_motor_en, speed_val);
+
 
 }
 
@@ -148,5 +149,5 @@ void neutrophil_brownian() {
 
 void loop() {
   neutrophil_brownian();
-  //run_speed(150);
+  //run_speed(100);
 }
