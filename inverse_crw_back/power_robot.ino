@@ -9,7 +9,7 @@ int Left_motor_en = 3;
 
 int orientation = 0;
 Gaussian gaussian = Gaussian();
-int control = 250;//PWM control speed
+int control = 100;//PWM control speed
 
 void setup()
 {
@@ -49,23 +49,23 @@ void spin_left()
 
 void spin_right_angle(int angle) {
   spin_right();
-  delay(1020.0*angle/6);
+  delay(782.0*angle/6);
 }
 
 void spin_left_angle(int angle) {
   spin_left();
-  delay(1020.0*angle/6);
+  delay(780.0*angle/6);
 }
 
 void run_speed(int speed_val)
 {
   digitalWrite(Right_motor_go, HIGH);
   digitalWrite(Right_motor_back, LOW);
-  analogWrite(Right_motor_en, speed_val*0.99);
+  analogWrite(Right_motor_en, speed_val);
 
   digitalWrite(Left_motor_go, HIGH);
   digitalWrite(Left_motor_back, LOW);
-  analogWrite(Left_motor_en, speed_val);
+  analogWrite(Left_motor_en, speed_val*0.95);
 
 
 }
@@ -130,7 +130,7 @@ void neutrophil_inverse_crw() {
   // cell, not in absolute space.
   double new_orientation = orientation+pitch/(M_PI*2)*12;
   orient(new_orientation);
-  run_speed(currentSpeed/maxSpeed*250); //200 is the maxSpeed of robot
+  run_speed(currentSpeed/maxSpeed*150); //200 is the maxSpeed of robot
   delay(500); // walk at selected speed for 500 ms
 }
 
@@ -143,15 +143,13 @@ void neutrophil_brownian() {
   currentSpeed = min(maxSpeed, currentSpeed); 
   currentSpeed = abs(currentSpeed);
   orient(random(0, 12));
-  run_speed(currentSpeed/maxSpeed*250); //200 is the maxSpeed of robot
+  run_speed(currentSpeed/maxSpeed*150); //200 is the maxSpeed of robot
   delay(500); // walk at selected speed for 500 ms
 }
 
 //power robot parameters
 //at speed 100, left should be 0.95 of total speed
-//set control to 100
 //for 360 degree turns, use 2*MPI
-//max speed in inverse_crw and brownian to 150
 /*
 void spin_right_angle(int angle) {
   spin_right();
@@ -164,28 +162,9 @@ void spin_left_angle(int angle) {
 }
  */
 
-//slow robot parameters
-//at speed 250, right should be 0.99 of total speed
-//set control to 250
-//for 360 degree turns, use 2*MPI
-//max speed in inverse_crw and brownian to 150
-
-/*
-void spin_right_angle(int angle) {
-  spin_right();
-  delay(1020.0*angle/6);
-}
-
-void spin_left_angle(int angle) {
-  spin_left();
-  delay(1020.0*angle/6);
-}
- */
-
 void loop() {
   neutrophil_inverse_crw();
-  //neutrophil_brownian();
-  //run_speed(250);
+  //run_speed(100);
   //spin_left_angle(2*M_PI);
   //brake(); //stop
   //delay(3000);
