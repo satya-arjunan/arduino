@@ -9,10 +9,9 @@ int Left_motor_en = 3;
 
 int orientation = 0;
 Gaussian gaussian = Gaussian();
-int control = 250;//PWM control speed
+int default_speed = 250; //PWM default_speed
 
-void setup()
-{
+void setup() {
   pinMode(Left_motor_go, OUTPUT);
   pinMode(Left_motor_back, OUTPUT); 
   pinMode(Right_motor_go, OUTPUT); 
@@ -24,27 +23,25 @@ void setup()
   delay(3000); // walk at selected speed for 500 ms
 }
 
-void spin_right()
-{
+void spin_right() {
   digitalWrite(Right_motor_go, LOW);  // right motor back off
   digitalWrite(Right_motor_back, HIGH);
-  // Pulse Width Modulation(0~255) control speed
-  analogWrite(Right_motor_en, control);
+  // Pulse Width Modulation(0~255) default_speed speed
+  analogWrite(Right_motor_en, default_speed);
   digitalWrite(Left_motor_go, HIGH); // left motor go ahead
   digitalWrite(Left_motor_back, LOW);
-  // Pulse Width Modulation(0~255) control speed
-  analogWrite(Left_motor_en, control);
+  // Pulse Width Modulation(0~255) default_speed speed
+  analogWrite(Left_motor_en, default_speed);
 }
 
-void spin_left()
-{
+void spin_left() {
   digitalWrite(Right_motor_go, HIGH);  // right motor go ahead
   digitalWrite(Right_motor_back, LOW);
-  analogWrite(Right_motor_en, control);
+  analogWrite(Right_motor_en, default_speed);
   digitalWrite(Left_motor_go, LOW);  // left motor back off
   digitalWrite(Left_motor_back, HIGH);
-  //PWM--Pulse Width Modulation(0~255) control speed
-  analogWrite(Left_motor_en, control);
+  //PWM--Pulse Width Modulation(0~255) default_speed speed
+  analogWrite(Left_motor_en, default_speed);
 }
 
 void spin_right_angle(int angle) {
@@ -57,21 +54,17 @@ void spin_left_angle(int angle) {
   delay(1020.0*angle/6);
 }
 
-void run_speed(int speed_val)
-{
+void run_at_speed(int speed) {
   digitalWrite(Right_motor_go, HIGH);
   digitalWrite(Right_motor_back, LOW);
-  analogWrite(Right_motor_en, speed_val*0.99);
+  analogWrite(Right_motor_en, speed*0.99);
 
   digitalWrite(Left_motor_go, HIGH);
   digitalWrite(Left_motor_back, LOW);
-  analogWrite(Left_motor_en, speed_val);
-
-
+  analogWrite(Left_motor_en, speed);
 }
 
-void brake()         //stop
-{
+void brake() {
   digitalWrite(Left_motor_back, LOW);
   digitalWrite(Left_motor_go, LOW);
   digitalWrite(Right_motor_go, LOW);
@@ -111,7 +104,7 @@ void neutrophil_inverse_crw() {
   currentSpeed = min(maxSpeed, currentSpeed); 
   // cell's can't move backwards
   currentSpeed = abs(currentSpeed);
-  
+
   gaussian.mean = pitchRateMean;
   gaussian.variance = pitchRateStd*pitchRateStd;
   double pitch = gaussian.random();
@@ -130,7 +123,7 @@ void neutrophil_inverse_crw() {
   // cell, not in absolute space.
   double new_orientation = orientation+pitch/(M_PI*2)*12;
   orient(new_orientation);
-  run_speed(currentSpeed/maxSpeed*250); //200 is the maxSpeed of robot
+  run_at_speed(currentSpeed/maxSpeed*250); //200 is the maxSpeed of robot
   delay(500); // walk at selected speed for 500 ms
 }
 
@@ -143,13 +136,37 @@ void neutrophil_brownian() {
   currentSpeed = min(maxSpeed, currentSpeed); 
   currentSpeed = abs(currentSpeed);
   orient(random(0, 12));
-  run_speed(currentSpeed/maxSpeed*250); //200 is the maxSpeed of robot
+  run_at_speed(currentSpeed/maxSpeed*250); //200 is the maxSpeed of robot
   delay(500); // walk at selected speed for 500 ms
+}
+
+void calibrate_wheel_alignment() {
+  run_at_speed(default_speed);
+}
+
+void calibrate_right_360_angle() {
+  spin_right_angle(2*M_PI);
+  brake();
+  delay(3000);
+}
+
+void calibrate_left_360_angle() {
+  spin_left_angle(2*M_PI);
+  brake();
+  delay(3000);
+}
+
+void loop() {
+  neutrophil_inverse_crw();
+  //neutrophil_brownian();
+  //calibrate_wheel_alignment();
+  //calibrate_left_360_angle();
+  //calibrate_right_360_angle();
 }
 
 //power robot parameters
 //at speed 100, left should be 0.95 of total speed
-//set control to 100
+//set default_speed to 100
 //for 360 degree turns, use 2*MPI
 //max speed in inverse_crw and brownian to 150
 /*
@@ -166,7 +183,7 @@ void spin_left_angle(int angle) {
 
 //slow robot parameters
 //at speed 250, right should be 0.99 of total speed
-//set control to 250
+//set default_speed to 250
 //for 360 degree turns, use 2*MPI
 //max speed in inverse_crw and brownian to 150
 
@@ -182,11 +199,3 @@ void spin_left_angle(int angle) {
 }
  */
 
-void loop() {
-  neutrophil_inverse_crw();
-  //neutrophil_brownian();
-  //run_speed(250);
-  //spin_left_angle(2*M_PI);
-  //brake(); //stop
-  //delay(3000);
-}
