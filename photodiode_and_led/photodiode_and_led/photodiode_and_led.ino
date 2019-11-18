@@ -10,7 +10,7 @@ Serial.begin(9600);                         //Configure baud rate 9600
 void loop(){
 val = analogRead(0);                     // Read voltage value ranging from 0 -1023
 Serial.println(val);                         // read voltage value from serial monitor
-if(val>=31){                                  // If lower than 1000, turn off LED
+if(val>=28){                                  // If lower than 1000, turn off LED
 digitalWrite(LED,HIGH);
 }else{                                              // Otherwise turn on LED
 digitalWrite(LED,LOW);
