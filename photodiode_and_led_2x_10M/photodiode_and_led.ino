@@ -36,7 +36,7 @@ void loop() {
 
   average = total / numReadings;
   Serial.println(average);
-  if (average >= 141) {
+  if (average >= 260) {
     digitalWrite(LED,HIGH);
   }
   else {
@@ -53,7 +53,7 @@ void loop() {
 
   average2 = total2 / numReadings;
   //Serial.println(average2);
-  if (average2 >= 103) {
+  if (average2 >= 195) {
     digitalWrite(LED2,HIGH);
   }
   else {
