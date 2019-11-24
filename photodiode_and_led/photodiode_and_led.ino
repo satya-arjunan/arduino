@@ -1,19 +1,42 @@
-// Project 9– Light the lamp
-int LED = 13;                                     //define LED digital pin 13
-int val = 0;                                         //define the voltage value of photo diode in digital pin 0
+int LED = 13;
 
-void setup(){
-pinMode(LED,OUTPUT);                // Configure LED as output mode
-Serial.begin(9600);                         //Configure baud rate 9600
+const int numReadings = 50;
+int readings[numReadings];      // the readings from the analog input
+int readIndex = 0;              // the index of the current reading
+int total = 0;                  // the running total
+int average = 0;                // the average
+
+int inputPin = A0;
+
+void setup() {
+  pinMode(LED,OUTPUT);
+  Serial.begin(9600);
+  for (int i(0); i < numReadings; i++) {
+    readings[i] = 0;
+  }
 }
 
-void loop(){
-val = analogRead(0);                     // Read voltage value ranging from 0 -1023
-Serial.println(val);                         // read voltage value from serial monitor
-if(val>=31){                                  // If lower than 1000, turn off LED
-digitalWrite(LED,HIGH);
-}else{                                              // Otherwise turn on LED
-digitalWrite(LED,LOW);
+void loop() {
+  total = total - readings[readIndex];
+  readings[readIndex] = analogRead(inputPin);
+  total = total + readings[readIndex];
+  readIndex = readIndex + 1;
+  if (readIndex >= numReadings) {
+    readIndex = 0;
+  }
+
+  average = total / numReadings;
+  Serial.println(average);
+  if (average >= 320) {
+    digitalWrite(LED,HIGH);
+  }
+  else {
+    digitalWrite(LED,LOW);
+  }
+  delay(1);        // delay in between reads for stability
 }
-                                     // delay for 10ms
-}
+
+/*
+  5.6M 180 (low 160, ambience 165, high 190, side angle 180)
+  10M (low 290, ambience 297, high 350, side angle 315)
+  */
