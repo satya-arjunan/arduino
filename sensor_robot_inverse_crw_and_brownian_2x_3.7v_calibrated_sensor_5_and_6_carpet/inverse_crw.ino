@@ -21,19 +21,6 @@ const int west_idx = 4;
 const int north_east_idx = 1;
 const int north_west_idx = 2;
 
-
-const float spin_threshold(1.0);
-
-//calibrate angles
-const float north_angle = 0;
-const float north_east_angle = -59;
-const float north_west_angle = 57;
-const float east_angle = -105;
-const float west_angle = 95;
-const float south_angle = 172;
-const float sensor_angles[sensor_size] = {north_angle, north_east_angle, north_west_angle,
-  east_angle, west_angle, south_angle};
-
 //calibrate from 6th line front edge
 const int north_value = 20;
 const int south_value = 27;
@@ -55,13 +42,13 @@ const int north_west_value = 35;
 const int serial_select(west_idx);
 int LED[sensor_size] = {north_LED, north_east_LED, north_west_LED, east_LED,
  west_LED, south_LED};
-const float sensor_values[6] = {north_value, north_east_value, north_west_value,
+const int dist_values[6] = {north_value, north_east_value, north_west_value,
  east_value, west_value, south_value}; 
 
 int inputPin[sensor_size] = {north, north_east, north_west, east, west, south};
 int readings[sensor_size][read_size];
-float total[sensor_size];
-float average[sensor_size];
+int total[sensor_size];
+int average[sensor_size];
 int readIndex(0);
 
 
@@ -81,14 +68,34 @@ const float speed_left_fraction = 0.946;
 const float spin_360_left_delay = 1027;
 const float spin_360_right_delay = 1028;
 
+void update_sensors_after_1ms() {
+  for (unsigned i(0); i < sensor_size; ++i) {
+    total[i] -= readings[i][readIndex];
+    readings[i][readIndex] = analogRead(inputPin[i]);
+    total[i] += readings[i][readIndex];
+    average[i] = total[i] / read_size;
+    if (i == serial_select) {
+      Serial.println(average[i]);
+    }
+    if (average[i] >= dist_values[i]) {
+      digitalWrite(LED[i], HIGH);
+    }
+    else {
+      digitalWrite(LED[i], LOW);
+    }
+  }
+  readIndex = readIndex + 1;
+  if (readIndex >= read_size) {
+    readIndex = 0;
+  }
+}
+
 void local_delay(int ms) {
-  for (unsigned i(0); i < ms/1.72; ++i) {
+  for (unsigned i(0); i < ms/2; ++i) {
     update_sensors_after_1ms();
     delay(1);
   }
 }
-
-
 
 
 void spin_right() {
@@ -151,47 +158,6 @@ void orient(int new_orientation) {
   local_delay(100);
 }
 
-bool spin_toward_sensor() {
-  float max_ratio(0);
-  int sensor_idx(0);
-  for (unsigned i(0); i < sensor_size; ++i) {
-    float ratio(average[i]/sensor_values[i]);
-    if (ratio > max_ratio) {
-      max_ratio = ratio;
-      sensor_idx = i;
-    }
-  }
-  if (max_ratio > spin_threshold) {
-    orient(sensor_angles[sensor_idx]);
-    return true;
-  }
-  return false;
-}
-
-void update_sensors_after_1ms() {
-  for (unsigned i(0); i < sensor_size; ++i) {
-    total[i] -= readings[i][readIndex];
-    readings[i][readIndex] = analogRead(inputPin[i]);
-    total[i] += readings[i][readIndex];
-    average[i] = total[i] / read_size;
-    if (i == serial_select) {
-      //Serial.println(average[i]);
-    }
-    if (average[i] >= sensor_values[i]) {
-      digitalWrite(LED[i], HIGH);
-    }
-    else {
-      digitalWrite(LED[i], LOW);
-    }
-  }
-  readIndex = readIndex + 1;
-  if (readIndex >= read_size) {
-    readIndex = 0;
-  }
-}
-
-
-
 void neutrophil_inverse_crw() {
   double speedStd = 8.5;
   double speedMean = 5.95;
@@ -247,7 +213,7 @@ void neutrophil_brownian() {
 
 void calibrate_wheel_alignment() {
   run_at_speed(default_speed);
-  local_delay(5000);
+  delay(5000);
   brake();
   delay(100000);
 }
@@ -255,43 +221,13 @@ void calibrate_wheel_alignment() {
 void calibrate_right_360_angle() {
   spin_right_angle(360);
   brake();
-  local_delay(3000);
+  delay(3000);
 }
 
 void calibrate_left_360_angle() {
   spin_left_angle(360);
   brake();
-  local_delay(3000);
-}
-
-void calibrate_spin_north_east() {
-  orient(360+north_east_angle);
-  brake();
-  local_delay(3000);
-}
-
-void calibrate_spin_north_west() {
-  orient(north_west_angle);
-  brake();
-  local_delay(3000);
-}
-
-void calibrate_spin_east() {
-  orient(360+east_angle);
-  brake();
-  local_delay(3000);
-}
-
-void calibrate_spin_west() {
-  orient(west_angle);
-  brake();
-  local_delay(3000);
-}
-
-void calibrate_spin_south() {
-  orient(south_angle);
-  brake();
-  local_delay(3000);
+  delay(3000);
 }
 
 void setup_sensors() {
@@ -320,7 +256,7 @@ void setup_motors() {
 void setup() {
   setup_motors();
   setup_sensors();
-  delay(1500);
+  //delay(3000);
 }
 
 
@@ -330,20 +266,11 @@ void loop_motors() {
   //calibrate_wheel_alignment();
   //calibrate_left_360_angle();
   //calibrate_right_360_angle();
-  //calibrate_spin_north_east();
-  //calibrate_spin_north_west();
-  //calibrate_spin_east();
-  //calibrate_spin_west();
-  //calibrate_spin_south();
 }
 
 void loop() {
-  loop_motors();
-  //update_sensors_after_1ms();
-  if (spin_toward_sensor()) {
-    brake();
-    local_delay(500);
-  }
+  //loop_motors();
+  update_sensors_after_1ms();
   delay(1);
 }
 

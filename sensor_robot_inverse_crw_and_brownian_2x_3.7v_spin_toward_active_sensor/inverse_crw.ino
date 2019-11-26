@@ -22,7 +22,7 @@ const int north_east_idx = 1;
 const int north_west_idx = 2;
 
 
-const float spin_threshold(1.0);
+const float spin_threshold(1.5);
 
 //calibrate angles
 const float north_angle = 0;
@@ -338,12 +338,12 @@ void loop_motors() {
 }
 
 void loop() {
-  loop_motors();
-  //update_sensors_after_1ms();
+  //loop_motors();
+  update_sensors_after_1ms();
+  delay(1);
   if (spin_toward_sensor()) {
     brake();
-    local_delay(500);
+    delay(1000);
   }
-  delay(1);
 }
 
