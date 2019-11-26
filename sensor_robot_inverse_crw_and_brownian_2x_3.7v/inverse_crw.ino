@@ -164,8 +164,8 @@ void calibrate_left_360_angle() {
 }
 
 void loop() {
-  //neutrophil_inverse_crw();
-  neutrophil_brownian();
+  neutrophil_inverse_crw();
+  //neutrophil_brownian();
   //calibrate_wheel_alignment();
   //calibrate_left_360_angle();
   //calibrate_right_360_angle();
