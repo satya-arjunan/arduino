@@ -389,11 +389,11 @@ void ring_led() {
 
 
 void loop_motors() {
-  //neutrophil_inverse_crw();
+  neutrophil_inverse_crw();
   //neutrophil_brownian();
   //calibrate_wheel_alignment();
   //calibrate_left_360_angle();
-  calibrate_right_360_angle();
+  //calibrate_right_360_angle();
   //calibrate_spin_north_east();
   //calibrate_spin_north_west();
   //calibrate_spin_east();
