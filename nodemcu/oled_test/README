@@ -1,0 +1,51 @@
+Steps to test OLED on NodeMCU
+1. Git clone https://github.com/satya-arjunan/arduino.git
+2. Open Arduino IDE and set sketchbook location in Files -> Preference:
+    c:\Users\S.Arjunan\wrk\arduino\nodemcu
+    add the following line in the “Additional boards manager URLs:”
+        http://arduino.esp8266.com/stable/package_esp8266com_index.json
+3. Download and install the driver from https://www.wch-ic.com/downloads/CH341SER_ZIP.html
+4. Tools -> Board Manager -> search “nodemc”u -> select nodemcu 1.0 (ESP-12E Module) -> Install manually (takes about 15 mins)
+5. Tools -> Manage Library -> search “GFX” -> Install Adafruit GFX library (install all)
+6. cd c:\Users\S.Arjunan\wrk\arduino\nodemcu
+    git clone https://github.com/olikraus/U8g2_for_Adafruit_GFX
+    git clone https://github.com/adafruit/Adafruit_SSD1306.git
+7. create a new sketch with the following name “oled_test” in arduino/nodemcu folder
+8. copy the code below to the IDE and upload:
+#include <Wire.h>
+#include "Adafruit_SSD1306.h"
+#include "U8g2_for_Adafruit_GFX.h"
+
+
+#define SCREEN_WIDTH 128
+#define SCREEN_HEIGHT 64
+#define OLED_RESET -1
+#define SCREEN_ADDRESS 0x3C
+
+
+Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
+U8G2_FOR_ADAFRUIT_GFX u8g2_for_adafruit_gfx;
+
+
+void setup() {
+  Wire.begin(14,12);
+  display.begin(SSD1306_SWITCHCAPVCC, SCREEN_ADDRESS);
+  u8g2_for_adafruit_gfx.begin(display);                 // connect u8g2 procedures to Adafruit GFX
+}
+
+
+void loop() {  
+  display.clearDisplay();                               // clear the graphcis buffer  
+  u8g2_for_adafruit_gfx.setFont(u8g2_font_helvR14_tf);  // select u8g2 font from here: https://github.com/olikraus/u8g2/wiki/fntlistall
+  u8g2_for_adafruit_gfx.setFontMode(1);                 // use u8g2 transparent mode (this is default)
+  u8g2_for_adafruit_gfx.setFontDirection(0);            // left to right (this is default)
+  u8g2_for_adafruit_gfx.setForegroundColor(WHITE);      // apply Adafruit GFX color
+  u8g2_for_adafruit_gfx.setCursor(0,20);                // start writing at this position
+  u8g2_for_adafruit_gfx.print("Hello World");
+  u8g2_for_adafruit_gfx.setCursor(0,40);                // start writing at this position
+  u8g2_for_adafruit_gfx.print("Umlaut ÄÖÜ");            // UTF-8 string with german umlaut chars
+  display.display();                                    // make everything visible
+  delay(2000);
+}
+
+If there is an error, select the correct com port
