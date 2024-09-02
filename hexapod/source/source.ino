@@ -181,10 +181,7 @@ void turnOff(void)
     printf(F("OFF\n"));
 }
 
-void loop() {
-}
 
-/*
 void loop()
 {
     u32  dwButton;
@@ -418,5 +415,5 @@ loop_exit:
 
     ctrlState.fHexOnOld = ctrlState.fHexOn;
 }
-*/
+
 
