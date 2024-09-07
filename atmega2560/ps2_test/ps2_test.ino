@@ -81,12 +81,6 @@ void init_ps2() {
   error = ps2x.config_gamepad(PS2_CLK, PS2_CMD, PS2_SEL, PS2_DAT);
 }
 
-void rotate_servo(Servo& servo) {
-  servo.write(0);
-  delay(50);
-  servo.write(90);
-}
-
 void get_ps2_input() {
   ps2x.read_gamepad();
   if ((ps2x.Analog(1) & 0xf0) != 0x70) {
@@ -106,75 +100,61 @@ void get_ps2_input() {
     Serial.print(" ");
     Serial.println("PSB_START");
   } 
-  else if (ps2x.ButtonPressed(PSB_L1)) {// L1 Button Test
+  if (ps2x.ButtonPressed(PSB_L1)) {// L1 Button Test
     Serial.print(" ");
     Serial.println("PSB_L1");
-    rotate_servo(lf_femur);
   }
-  else if (ps2x.ButtonPressed(PSB_L2)) {    // L2 Button Test
+  if (ps2x.ButtonPressed(PSB_L2)) {    // L2 Button Test
     Serial.print(" ");
     Serial.println("PSB_L2");
-    rotate_servo(lf_tibia);
   }
-  else if (ps2x.ButtonPressed(PSB_CIRCLE)) {
+  if (ps2x.ButtonPressed(PSB_CIRCLE)) {
     Serial.print(" ");
     Serial.println("PSB_CIRCLE");
-    rotate_servo(lm_tibia);
   }
-  else if (ps2x.ButtonPressed(PSB_CROSS)) { // CROSS Button Test
+  if (ps2x.ButtonPressed(PSB_CROSS)) { // CROSS Button Test
     Serial.print(" ");
     Serial.println("PSB_CROSS");
-    rotate_servo(lm_femur);
   }
-  else if (ps2x.ButtonPressed(PSB_SQUARE)) { // Square Button Test
+  if (ps2x.ButtonPressed(PSB_SQUARE)) { // Square Button Test
     Serial.print(" ");
     Serial.println("PSB_SQUARE");
-    rotate_servo(lm_coxa);
   }
-  else if (ps2x.ButtonPressed(PSB_TRIANGLE)) { // Triangle - Button Test
+  if (ps2x.ButtonPressed(PSB_TRIANGLE)) { // Triangle - Button Test
     Serial.print(" ");
     Serial.println("PSB_TRIANGLE");
-    rotate_servo(lr_coxa);
   }
-  else if (ps2x.ButtonPressed(PSB_PAD_UP)) {// D-Up - Button Test
+  if (ps2x.ButtonPressed(PSB_PAD_UP)) {// D-Up - Button Test
     Serial.print(" ");
     Serial.println("PSB_PAD_UP");
-    rotate_servo(lr_femur);
   }
-  else if (ps2x.ButtonPressed(PSB_PAD_DOWN)) {// D-Down - Button Test
+  if (ps2x.ButtonPressed(PSB_PAD_DOWN)) {// D-Down - Button Test
     Serial.print(" ");
     Serial.println("PSB_PAD_DOWN");
-    rotate_servo(lr_tibia);
   }
-  else if (ps2x.ButtonPressed(PSB_PAD_RIGHT)) { // D-Right - Button Test
+  if (ps2x.ButtonPressed(PSB_PAD_RIGHT)) { // D-Right - Button Test
     Serial.print(" ");
     Serial.println("PSB_PAD_RIGHT");
-    rotate_servo(rf_tibia);
   }
-  else if (ps2x.ButtonPressed(PSB_PAD_LEFT)) { // D-Left - Button Test
+  if (ps2x.ButtonPressed(PSB_PAD_LEFT)) { // D-Left - Button Test
     Serial.print(" ");
     Serial.println("PSB_PAD_LEFT");
-    rotate_servo(rf_femur);
   }
-  else if (ps2x.ButtonPressed(PSB_SELECT)) {           // Select Button Test
+  if (ps2x.ButtonPressed(PSB_SELECT)) {           // Select Button Test
     Serial.print(" ");
     Serial.println("PSB_SELECT");
-    rotate_servo(rf_coxa);
   }
-  else if (ps2x.ButtonPressed(PSB_R1)) { // R1 Button Test
+  if (ps2x.ButtonPressed(PSB_R1)) { // R1 Button Test
     Serial.print(" ");
     Serial.println("PSB_R1");
-    rotate_servo(rr_coxa);
   }
-  else if (ps2x.ButtonPressed(PSB_R2)) {// R2 Button Test
+  if (ps2x.ButtonPressed(PSB_R2)) {// R2 Button Test
     Serial.print(" ");
     Serial.println("PSB_R2");
-    rotate_servo(rr_femur);
   }
-  else if (ps2x.ButtonPressed(PSB_R3)) {// R3 Button Test
+  if (ps2x.ButtonPressed(PSB_R3)) {// R3 Button Test
     Serial.print(" ");
     Serial.println("PSB_R3");
-    rotate_servo(rr_tibia);
   }
 }
 
@@ -219,6 +199,6 @@ void loop() {
         delay(15);
     }
     */
-    delay(300);
+    delay(200);
 }
 
