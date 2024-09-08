@@ -199,8 +199,10 @@ void loop()
     if (!dwButton)
         goto loop_exit;
 
+
     if (BUTTON_PRESSED(dwButton, INPUT_TOGGLE_ON_OFF)) {
     	if (ctrlState.fHexOn) {
+            printf(F("OFF\n"));
             turnOff();
             mColor = 0;
         } else {
@@ -296,6 +298,7 @@ void loop()
     }
 
     if (BUTTON_PRESSED(dwButton, INPUT_SPEED_UP)) {
+        printf(F("speed up:%d\n"), mModeControl);
         if (ctrlState.wSpeedControl > 0) {
             ctrlState.wSpeedControl = ctrlState.wSpeedControl - 50;
             Utils::sound(300, 0, 0, 50, 300);

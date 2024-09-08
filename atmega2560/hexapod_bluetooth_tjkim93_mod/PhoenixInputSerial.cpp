@@ -40,8 +40,8 @@ void PhoenixInputSerial::init(s8 (*callback)(u8 cmd, u8 *data, u8 size, u8 *res)
 }
 
 //==============================================================================
-// This is The main code to input function to read inputs from the PS2 and then
-//process any commands.
+// This is The main code to input function to read inputs from the
+// serial monitor and then process any commands.
 //==============================================================================
 u32 PhoenixInputSerial::get(u8 *lx, u8 *ly, u8 *rx, u8 *ry)
 {
