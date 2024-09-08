@@ -143,7 +143,8 @@ void setup()
 	input->init(NULL);
 
 #elif (CONFIG_CTRL_TYPE == CONFIG_CTRL_TYPE_PS2)
-  input = new PhoenixInputPS2();
+    CONFIG_CTRL_SERIAL.begin(CONFIG_CTRL_BAUD);
+    input = new PhoenixInputPS2(&CONFIG_CTRL_SERIAL);
 	input->init(NULL);
 
 #elif (CONFIG_CTRL_TYPE == CONFIG_CTRL_TYPE_BTCON)
@@ -154,7 +155,6 @@ void setup()
 #else
     #error No Controller !!
 #endif
-
 
     PhoenixServo    *servo;
 #if (CONFIG_SERVO == CONFIG_SERVO_SW_PWM)
@@ -171,7 +171,6 @@ void setup()
 
     core = new PhoenixCore(servo, &ctrlState);
 	core->init();
-
     printf(F("FREE RAM : %d\n"), freeRam());
 }
 
@@ -197,7 +196,6 @@ void loop()
 
     if (!dwButton)
         goto loop_exit;
-
 
     if (BUTTON_PRESSED(dwButton, INPUT_TOGGLE_ON_OFF)) {
     	if (ctrlState.fHexOn) {

@@ -20,6 +20,7 @@
 PhoenixInputPS2::PhoenixInputPS2(void)
 {
     mSerial = &CONFIG_CTRL_SERIAL;
+    mSerial->begin(CONFIG_CTRL_BAUD);
 }
 
 PhoenixInputPS2::PhoenixInputPS2(HardwareSerial *serial)
@@ -29,131 +30,142 @@ PhoenixInputPS2::PhoenixInputPS2(HardwareSerial *serial)
 
 void PhoenixInputPS2::init(s8 (*callback)(u8 cmd, u8 *data, u8 size, u8 *res))
 {
+    printf(F("%s\n"), __PRETTY_FUNCTION__);
+    //added delay to give wireless ps2 module some time to startup
+    //before configuring it
+    delay(300);
+    int error = mPS2.config_gamepad(PS2_CLK, PS2_CMD, PS2_SEL, PS2_DAT);
+    if (error == 0) {
+      printf(F("Found ps2 controller\n"));
+    }
+    else if (error == 1) {
+      printf(F("No ps2 controller found\n"));
+    }
+    else if (error == 2) {
+      printf(F("Controller found but not accepting commands\n"));
+    }
+      
     mLX = 128;
     mLY = 128;
     mRX = 128;
     mRY = 128;
-#ifndef CONFIG_DBG_SERIAL
-    mSerial->begin(CONFIG_CTRL_BAUD);
-#endif
-    printf(F("%s\n"), __PRETTY_FUNCTION__);
+    mCallback = callback;
 }
 
 //==============================================================================
-// This is The main code to input function to read inputs from the
-// serial monitor and then process any commands.
+// This code reads inputs from a playstation 2 game controller (PS2) and
+// then processes any commands.
 //==============================================================================
 u32 PhoenixInputPS2::get(u8 *lx, u8 *ly, u8 *rx, u8 *ry)
 {
-    int cmd;
+    delay(50);  
+    //int cmd;
 
+    mPS2.read_gamepad();
+    if ((mPS2.Analog(1) & 0xf0) != 0x70) {
+        return 0;
+    }
+    /*
+    printf("PS2 Input: ");
+    printf(F("data byte:%x\n"), mPS2.ButtonDataByte());
+    printf(":");
+    printf(F("lx:%d\n"), mPS2.Analog(PSS_LX));
+    printf(" ");
+    printf(F("ly:%d\n"), mPS2.Analog(PSS_LY));
+    printf(" ");
+    printf(F("rx:%d\n"), mPS2.Analog(PSS_RX));
+    printf(" ");
+    printf(F("ry:%d\n"), mPS2.Analog(PSS_RY));
+    */
+
+    //cmd = mSerial->read();
+    //printf(F("input from serial monitor:%c\n"), cmd);
+    
+    /*
+    mLX = mPS2.Analog(PSS_LX);
+    mLY = mPS2.Analog(PSS_LY);
+    mRY = mPS2.Analog(PSS_RY);
+    mRX = mPS2.Analog(PSS_RX);
+    */
     *lx = mLX;
     *ly = mLY;
     *rx = mRX;
     *ry = mRY;
+    if (mPS2.NewButtonState()) {
 
-    if (mSerial->available() == 0)
-        return 0;
-
-    cmd = mSerial->read();
-    printf(F("input from serial monitor:%c\n"), cmd);
-
-    switch(cmd) {
-        case 'x':
-            return INPUT_BODY_UP;
-
-        case 's':
-            return INPUT_BODY_DOWN;
-
-        case 'a':
-            return INPUT_SPEED_DOWN;
-
-        case 'd':
-            return INPUT_SPEED_UP;
-
-        case ' ':
-            *lx = mLX = 128;
-            *ly = mLY = 128;
-            *rx = mRX = 128;
-            *ry = mRY = 128;
-            return INPUT_TOGGLE_ON_OFF;
-
-        case 'z':
-            return INPUT_OPT_SEL;
-
-        case '1':
-            return INPUT_TOGGLE_SHIFT;
-
-        case 'q':
-            return INPUT_TOGGLE_ROTATE;
-
-        case '3':
-            return INPUT_OPT_R1;
-
-        case 'e':
-            return INPUT_OPT_R2;
-
-        // Left Joystick
-        case 't':
-            if (mLY > 10)
-                mLY -= 10;
-            *ly = mLY;
-            return INPUT_LEFT_ANALOG;
-
-        case 'g':
-            if (mLY < 245)
-                mLY += 10;
-            *ly = mLY;
-            return INPUT_LEFT_ANALOG;
-
-        case 'f':
-            if (mLX > 10)
-                mLX -= 10;
-            *lx = mLX;
-            return INPUT_LEFT_ANALOG;
-
-        case 'h':
-            if (mLX < 245)
-                mLX += 10;
-            *lx = mLX;
-            return INPUT_LEFT_ANALOG;
-
-        // Right Joystick
-        case 'i':
-            if (mRY > 10)
-                mRY -= 10;
-            *ry = mRY;
-            return INPUT_RIGHT_ANALOG;
-
-        case 'k':
-            if (mRY < 245)
-                mRY += 10;
-            *ry = mRY;
-            return INPUT_RIGHT_ANALOG;
-
-        case 'j':
-            if (mRX > 10)
-                mRX -= 10;
-            *rx = mRX;
-            return INPUT_RIGHT_ANALOG;
-
-        case 'l':
-            if (mRX < 245)
-                mRX += 10;
-            *rx = mRX;
-            return INPUT_RIGHT_ANALOG;
-
-        // buttons
-        case ',':
-            return INPUT_TOGGLE_SINGLE_LEG;
-
-        case '.':
-            return INPUT_TOGGLE_BALANCE;
-
-        case '/':
-            return INPUT_TOGGLE_BODY_HEIGHT;
+    if (mPS2.Button(PSB_START)) {
+      *lx = mLX = 128;
+      *ly = mLY = 128;
+      *rx = mRX = 128;
+      *ry = mRY = 128;
+      printf(F("start/stop\n"));
+      return INPUT_TOGGLE_ON_OFF; //on or off
     }
-
+    // D-Up - Button Test
+    if (mPS2.Button(PSB_PAD_UP)) {
+      printf(F("body up\n"));
+      return INPUT_BODY_UP;
+    }
+    // D-Down - Button Test
+    if (mPS2.Button(PSB_PAD_DOWN)) {
+      printf(F("body down\n"));
+      return INPUT_BODY_DOWN;
+    }
+    // D-Right - Button Test
+    if (mPS2.Button(PSB_PAD_RIGHT)) {
+      printf(F("speed down\n"));
+      return INPUT_SPEED_DOWN;
+    }
+    // D-Left - Button Test
+    if (mPS2.Button(PSB_PAD_LEFT)) {
+      printf(F("speed up\n"));
+      return INPUT_SPEED_UP;
+    }
+    // Select Button Test
+    if (mPS2.Button(PSB_SELECT)) {
+      printf(F("opt_sel\n"));
+      return INPUT_OPT_SEL;
+    }
+    // L1 Button Test
+    if (mPS2.Button(PSB_L1)) {
+      printf(F("translate\n"));
+      return INPUT_TOGGLE_SHIFT; // translate
+    }
+    // L2 Button Test
+    if (mPS2.Button(PSB_L2)) {
+      printf(F("rotate\n"));
+      return INPUT_TOGGLE_ROTATE;
+    }
+    // R1 Button Test
+    if (mPS2.Button(PSB_R1)) {
+      printf(F("R1\n"));
+      return INPUT_OPT_R1;
+    }
+    // R2 Button Test
+    if (mPS2.Button(PSB_R2)) {
+      printf(F("R2\n"));
+      return INPUT_OPT_R2;
+    }
+    // O - Circle Button Test
+    if (mPS2.Button(PSB_CIRCLE)) {
+        //case ',':
+      printf(F("single leg\n"));
+      return INPUT_TOGGLE_SINGLE_LEG;
+    }
+    // CROSS Button Test
+    if (mPS2.Button(PSB_CROSS)) {
+        //case '.':
+      printf(F("balance\n"));
+      return INPUT_TOGGLE_BALANCE;
+    }
+    //Stand up, sit down  
+    // Triangle - Button Test
+    if (mPS2.Button(PSB_TRIANGLE)) {
+        //case '/':
+      printf(F("height\n"));
+      return INPUT_TOGGLE_BODY_HEIGHT;
+    }
+    }
     return 0;
 }
 
