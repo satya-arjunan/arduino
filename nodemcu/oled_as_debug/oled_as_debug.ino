@@ -49,8 +49,8 @@ void updateDisplay() {
   display.setCursor(0, 0);
 
   if (isnan(humidity) || isnan(temperature)) {
-    display.println("Failed to read");
-    display.println("from DHT sensor!");
+    display.println("Failed");
+    display.println("from a DHT sensor!");
   } else {
     display.println("Temp: ");
     display.print(temperature);

@@ -123,35 +123,35 @@
     #define PIN_STATUS_BLUE     A5
     #define PIN_SOUND           A14
 
-    #define PIN_RR_COXA         44  //Rear Right leg Hip Horizontal
-    #define PIN_RR_FEMUR        45  //Rear Right leg Hip Vertical
-    #define PIN_RR_TIBIA        46  //Rear Right leg Knee
+    #define PIN_RR_COXA         42  //Rear Right leg Hip Horizontal
+    #define PIN_RR_FEMUR        43  //Rear Right leg Hip Vertical
+    #define PIN_RR_TIBIA        44  //Rear Right leg Knee
     #define PIN_RR_TARS          1  //Tar
 
-    #define PIN_RM_COXA         35  //Middle Right leg Hip Horizontal
-    #define PIN_RM_FEMUR        33  //Middle Right leg Hip Vertical
-    #define PIN_RM_TIBIA        36  //Middle Right leg Knee
+    #define PIN_RM_COXA         30  //Middle Right leg Hip Horizontal
+    #define PIN_RM_FEMUR        31  //Middle Right leg Hip Vertical
+    #define PIN_RM_TIBIA        32  //Middle Right leg Knee
     #define PIN_RM_TARS          1  //Tar
 
-    #define PIN_RF_COXA         12  //Front Right leg Hip Horizontal
-    #define PIN_RF_FEMUR        32  //Front Right leg Hip Vertical
-    #define PIN_RF_TIBIA        34  //Front Right leg Knee
+    #define PIN_RF_COXA         26  //Front Right leg Hip Horizontal
+    #define PIN_RF_FEMUR        27  //Front Right leg Hip Vertical
+    #define PIN_RF_TIBIA        28  //Front Right leg Knee
     #define PIN_RF_TARS          1  //Tar
 
-    #define PIN_LR_COXA         9  //Rear Left leg Hip Horizontal
-    #define PIN_LR_FEMUR        10  //Rear Left leg Hip Vertical
-    #define PIN_LR_TIBIA        11  //Rear Left leg Knee
-    #define PIN_LR_TARS         1  //Tar
+    #define PIN_LR_COXA         18   //Rear Left leg Hip Horizontal
+    #define PIN_LR_FEMUR        19  //Rear Left leg Hip Vertical
+    #define PIN_LR_TIBIA        20  //Rear Left leg Knee
+    #define PIN_LR_TARS          1  //Tar
 
-    #define PIN_LM_COXA         6  //Middle Left leg Hip Horizontal
-    #define PIN_LM_FEMUR        7  //Middle Left leg Hip Vertical
-    #define PIN_LM_TIBIA        8  //Middle Left leg Knee
-    #define PIN_LM_TARS         1  //Tar = Not working...
+    #define PIN_LM_COXA          7   //Middle Left leg Hip Horizontal
+    #define PIN_LM_FEMUR         6   //Middle Left leg Hip Vertical
+    #define PIN_LM_TIBIA         5   //Middle Left leg Knee
+    #define PIN_LM_TARS          1   //Tar = Not working...
 
-    #define PIN_LF_COXA         2  //Front Left leg Hip Horizontal
-    #define PIN_LF_FEMUR        3  //Front Left leg Hip Vertical
-    #define PIN_LF_TIBIA        5  //Front Left leg Knee
-    #define PIN_LF_TARS         1  //Tar
+    #define PIN_LF_COXA         11   //Front Left leg Hip Horizontal
+    #define PIN_LF_FEMUR        10   //Front Left leg Hip Vertical
+    #define PIN_LF_TIBIA         9   //Front Left leg Knee
+    #define PIN_LF_TARS          1   //Tar
 #elif (CONFIG_BOARD == CONFIG_NASSPOP_MEGA)
     #define CONFIG_DBG_SERIAL   Serial
     #define CONFIG_DEBUG_BAUD   115200
@@ -322,7 +322,7 @@
 //Universal dimensions for each leg in mm
 #define cXXCoxaLength     45    // This is for CH3-R with Type 3 legs
 #define cXXFemurLength    35
-#define cXXTibiaLength    70
+#define cXXTibiaLength    80
 #define cXXTarsLength     1    // 4DOF only...
 
 #define cRRCoxaLength     cXXCoxaLength	    //Right Rear leg
