@@ -322,7 +322,7 @@
 //Universal dimensions for each leg in mm
 #define cXXCoxaLength     45    // This is for CH3-R with Type 3 legs
 #define cXXFemurLength    35
-#define cXXTibiaLength    80
+#define cXXTibiaLength    70
 #define cXXTarsLength     1    // 4DOF only...
 
 #define cRRCoxaLength     cXXCoxaLength	    //Right Rear leg

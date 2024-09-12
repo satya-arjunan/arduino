@@ -184,142 +184,29 @@ void turnOff(void)
     Utils::sound(400, 0, 0, 100, 300);
 }
 
+int x(0);
 
-void loop()
-{
-    u32  dwButton;
-    u8   lx, ly, rx, ry;
-    u8   ret;
+
+void loop() {
     bool fAdjustLegPositions = FALSE;
-
-    dwButton = input->get(&lx, &ly, &rx, &ry);
-
-    if (!dwButton)
-        goto loop_exit;
-
-    if (BUTTON_PRESSED(dwButton, INPUT_TOGGLE_ON_OFF)) {
-    	if (ctrlState.fHexOn) {
-            printf(F("OFF\n"));
-            turnOff();
-            mColor = 0;
-        } else {
-            ctrlState.fHexOn = TRUE;
-            printf(F("ON\n"));
-            Utils::sound(200, 200, 0, 100, 300);
-        }
-        fAdjustLegPositions = TRUE;
-    }
-
-    if (!ctrlState.fHexOn)
-        goto loop_exit;
-
-    // Switch between Walk method 1 && Walk method 2
-    if (BUTTON_PRESSED(dwButton, INPUT_TOGGLE_WALK)) { // R3 Button Test
-        Utils::sound(100, 100, 100, 50, 300);
-        mBoolWalkMode2 = !mBoolWalkMode2;
-    }
-
-    if (BUTTON_PRESSED(dwButton, INPUT_TOGGLE_SHIFT)) {
-        Utils::sound(100, 0, 0, 50, 300);
-        if (mModeControl != MODE_TRANSLATE )
-            mModeControl = MODE_TRANSLATE;
-        else
-            mModeControl = MODE_WALK;
-        printf(F("MODE:%d\n"), mModeControl);
-    }
-
-    if (BUTTON_PRESSED(dwButton, INPUT_TOGGLE_ROTATE)) {
-        Utils::sound(300, 0, 0, 50, 300);
-        if (mModeControl != MODE_ROTATE)
-            mModeControl = MODE_ROTATE;
-        else
-            mModeControl = MODE_WALK;
-        printf(F("MODE:%d\n"), mModeControl);
-    }
-
-    if (BUTTON_PRESSED(dwButton, INPUT_TOGGLE_SINGLE_LEG)) {
-        if (abs(ctrlState.c3dTravelLen.x) < CONFIG_TRAVEL_DEAD_ZONE && abs(ctrlState.c3dTravelLen.z) < CONFIG_TRAVEL_DEAD_ZONE &&
-            abs(ctrlState.c3dTravelLen.y * 2) < CONFIG_TRAVEL_DEAD_ZONE )   {
-            Utils::sound(300, 0, 0, 50, 300);
-
-            if (mModeControl != MODE_SINGLE_LEG) {
-                mModeControl = MODE_SINGLE_LEG;
-
-            if (ctrlState.bSingleLegCurSel == 255)
-                ctrlState.bSingleLegCurSel = PhoenixCore::IDX_RF;
-            } else {
-                mModeControl = MODE_WALK;
-                ctrlState.bSingleLegCurSel = 255;
-            }
-        }
-        printf(F("MODE:%d\n"), mModeControl);
-    }
-
-    if (BUTTON_PRESSED(dwButton, INPUT_TOGGLE_BALANCE)) {
-        ctrlState.fBalanceMode = !ctrlState.fBalanceMode;
-        if (ctrlState.fBalanceMode) {
-            Utils::sound(30, 30, 0, 50, 300);
-        } else {
-            Utils::sound(300, 0, 0, 50, 300);
-        }
-    }
-
-    if (BUTTON_PRESSED(dwButton, INPUT_TOGGLE_BODY_HEIGHT)) {
-        if (mBodyYOffset > 0)
-            mBodyYOffset = 0;
-        else
-            mBodyYOffset = 35;
-        fAdjustLegPositions = TRUE;
-    }
-
-    if (input->getBodyHeight() & INPUT_HEIGHT_SUPPORTED) {
-        mBodyYOffset = input->getBodyHeight() & INPUT_HEIGHT_MASK;
-        if (mBodyYOffset > MAX_BODY_Y)
-                mBodyYOffset = MAX_BODY_Y;
-        fAdjustLegPositions = TRUE;
-    } else {
-        if (BUTTON_PRESSED(dwButton, INPUT_BODY_UP)) {
-            printf(F("body up:%d\n"), mModeControl);
-            mBodyYOffset += 10;
-            if (mBodyYOffset > MAX_BODY_Y)
-                mBodyYOffset = MAX_BODY_Y;
-            fAdjustLegPositions = TRUE;
-        }
-
-        if (BUTTON_PRESSED(dwButton, INPUT_BODY_DOWN) && mBodyYOffset) {
-            printf(F("body down:%d\n"), mModeControl);
-            if (mBodyYOffset > 10)
-                mBodyYOffset -= 10;
-            else
-                mBodyYOffset = 0;
-            fAdjustLegPositions = TRUE;
-        }
-    }
-
-    if (BUTTON_PRESSED(dwButton, INPUT_SPEED_UP)) {
-        printf(F("speed up:%d\n"), mModeControl);
-        if (ctrlState.wSpeedControl > 0) {
-            ctrlState.wSpeedControl = ctrlState.wSpeedControl - 50;
-            Utils::sound(300, 0, 0, 50, 300);
-        }
-    }
-
-    if (BUTTON_PRESSED(dwButton, INPUT_SPEED_DOWN)) {
-        if (ctrlState.wSpeedControl < 2000 ) {
-            ctrlState.wSpeedControl = ctrlState.wSpeedControl + 50;
-            Utils::sound(300, 0, 0, 50, 300);
-        }
-    }
-
+    ctrlState.fHexOn = TRUE;
+    fAdjustLegPositions = TRUE;
+    //if (!ctrlState.fHexOn)
+    //    goto loop_exit;
+    mBoolWalkMode2 = TRUE;
+    mModeControl = MODE_WALK;
     if (mModeControl == MODE_WALK) {
         //Switch gaits
-        if (BUTTON_PRESSED(dwButton, INPUT_OPT_SEL)) {
-            printf(F("x:%d, y:%d, z:%d\n"), ctrlState.c3dTravelLen.x, ctrlState.c3dTravelLen.y, ctrlState.c3dTravelLen.z);
+        if (TRUE) {
+            ctrlState.c3dTravelLen.x += 1;
+            printf(F("x:%d, y:%d, z:%d\n"), ctrlState.c3dTravelLen.x, ctrlState.c3dTravelLen.y,
+                ctrlState.c3dTravelLen.z);
             if (abs(ctrlState.c3dTravelLen.x) < CONFIG_TRAVEL_DEAD_ZONE &&
                 abs(ctrlState.c3dTravelLen.z) < CONFIG_TRAVEL_DEAD_ZONE &&
                 abs(ctrlState.c3dTravelLen.y*2) < CONFIG_TRAVEL_DEAD_ZONE) {
                 ctrlState.bGaitType = ctrlState.bGaitType + 1;    // Go to the next gait...
-                if (ctrlState.bGaitType < NUM_GAITS) {            // Make sure we did not exceed number of gaits...
+                // Make sure we did not exceed number of gaits...
+                if (ctrlState.bGaitType < NUM_GAITS) {
                     Utils::sound(300, 0, 0, 50, 300);
                 } else {
                     Utils::sound(100, 100, 0, 50, 300);
@@ -331,6 +218,31 @@ void loop()
                 printf(F("GAIT can not be changed:%d\n"), ctrlState.bGaitType);
             }
         }
+    }
+loop_exit:
+    if (fAdjustLegPositions)
+        core->adjustLegPosToBodyHeight();
+
+    showLED(mColor);
+
+    u8 ret = core->loop();
+#if 0
+    if (ctrlState.fHexOn && (ret & PhoenixCore::STATUS_BATT_FAIL)) {
+        turnOff();
+        ctrlState.c3dBodyPos.y = 0;
+        core->adjustLegPosToBodyHeight();
+        core->loop();
+    } else if (ret & PhoenixCore::STATUS_BATT_WARN) {
+        Utils::sound(50, 50, 50, 50, 300);
+    }
+#endif
+    Utils::handleSound();
+
+    ctrlState.fHexOnOld = ctrlState.fHexOn;
+    delay(1000);
+}
+
+/*
 
         // Double leg lift height
         if (BUTTON_PRESSED(dwButton, INPUT_OPT_R1)) {
@@ -422,5 +334,6 @@ loop_exit:
 
     ctrlState.fHexOnOld = ctrlState.fHexOn;
 }
+*/
 
 
