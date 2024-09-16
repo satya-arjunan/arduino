@@ -331,6 +331,7 @@ void PhoenixCore::init(void)
         mLegPosXs[i] = (s16)pgm_read_word(&TBL_INT_POS_X[i]);    //Set start positions for each leg
         mLegPosYs[i] = (s16)pgm_read_word(&TBL_INT_POS_Y[i]);
         mLegPosZs[i] = (s16)pgm_read_word(&TBL_INT_POS_Z[i]);
+        printf(F("init pos i:%d, x:%d y:%d z:%d\n"), i, mLegPosXs[i], mLegPosZs[i], mLegPosZs[i]);
     }
 
     initCtrl();
@@ -520,6 +521,7 @@ u8 PhoenixCore::loop(void)
             mServo->commit(mCurServoMoveTime);
             delay(600);
         } else {
+            printf(F("Servos shutdown (released)"));
             mServo->release();
         }
         // We also have a simple debug monitor that allows us to
@@ -1129,6 +1131,7 @@ void PhoenixCore::adjustLegPosToBodyHeight(void)
 #ifdef CNT_HEX_INITS
     s16 sin4;
     s16 cos4;
+    printf(F("inside adjust\n"));
 
     // Lets see which of our units we should use...
     // Note: We will also limit our body height here...

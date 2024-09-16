@@ -19,10 +19,10 @@
 #include "PhoenixInput.h"
 #include <PS2X_lib.h>
 
-#define PS2_DAT      A0
-#define PS2_CMD      A1        
-#define PS2_SEL      A2
-#define PS2_CLK      A3
+#define PS2_DAT      A3
+#define PS2_CMD      A2
+#define PS2_SEL      A1
+#define PS2_CLK      A0
 
 class PhoenixInputPS2 : public PhoenixInput
 {

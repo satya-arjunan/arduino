@@ -176,164 +176,41 @@ void setup()
 
 #define BUTTON_PRESSED(stat, mask) (stat & (mask))
 
-void turnOff(void)
-{
-    mBodyYOffset = 0;
-    mBodyYShift  = 0;
-    core->initCtrl();
-    Utils::sound(400, 0, 0, 100, 300);
+void turnOff(void) {
+  mBodyYOffset = 0;
+  mBodyYShift  = 0;
+  core->initCtrl();
+  ctrlState.fHexOnOld = FALSE;
 }
-
-int x(0);
-
 
 void loop() {
-    bool fAdjustLegPositions = FALSE;
-    ctrlState.fHexOn = TRUE;
+  u32  dwButton;
+  u8   lx, ly, rx, ry;
+  dwButton = input->get(&lx, &ly, &rx, &ry);
+  bool fAdjustLegPositions = FALSE;
+
+  if (!dwButton) {
+    goto loop_exit;
+  }
+  if (BUTTON_PRESSED(dwButton, INPUT_TOGGLE_ON_OFF)) {
+    if (ctrlState.fHexOn) {
+      ctrlState.fHexOn = FALSE;
+      turnOff();
+      printf(F("OFF\n"));
+    } else {
+      ctrlState.fHexOn = TRUE;
+      printf(F("ON\n"));
+    }
     fAdjustLegPositions = TRUE;
-    //if (!ctrlState.fHexOn)
-    //    goto loop_exit;
-    mBoolWalkMode2 = TRUE;
-    mModeControl = MODE_WALK;
-    if (mModeControl == MODE_WALK) {
-        //Switch gaits
-        if (TRUE) {
-            ctrlState.c3dTravelLen.x += 1;
-            printf(F("x:%d, y:%d, z:%d\n"), ctrlState.c3dTravelLen.x, ctrlState.c3dTravelLen.y,
-                ctrlState.c3dTravelLen.z);
-            if (abs(ctrlState.c3dTravelLen.x) < CONFIG_TRAVEL_DEAD_ZONE &&
-                abs(ctrlState.c3dTravelLen.z) < CONFIG_TRAVEL_DEAD_ZONE &&
-                abs(ctrlState.c3dTravelLen.y*2) < CONFIG_TRAVEL_DEAD_ZONE) {
-                ctrlState.bGaitType = ctrlState.bGaitType + 1;    // Go to the next gait...
-                // Make sure we did not exceed number of gaits...
-                if (ctrlState.bGaitType < NUM_GAITS) {
-                    Utils::sound(300, 0, 0, 50, 300);
-                } else {
-                    Utils::sound(100, 100, 0, 50, 300);
-                    ctrlState.bGaitType = 0;
-                }
-                core->selectGait(ctrlState.bGaitType);
-                printf(F("GAIT:%d\n"), ctrlState.bGaitType);
-            } else {
-                printf(F("GAIT can not be changed:%d\n"), ctrlState.bGaitType);
-            }
-        }
-    }
+  }
+  if (!ctrlState.fHexOn) {
+    goto loop_exit;
+  }
 loop_exit:
-    if (fAdjustLegPositions)
-        core->adjustLegPosToBodyHeight();
-
-    showLED(mColor);
-
-    u8 ret = core->loop();
-#if 0
-    if (ctrlState.fHexOn && (ret & PhoenixCore::STATUS_BATT_FAIL)) {
-        turnOff();
-        ctrlState.c3dBodyPos.y = 0;
-        core->adjustLegPosToBodyHeight();
-        core->loop();
-    } else if (ret & PhoenixCore::STATUS_BATT_WARN) {
-        Utils::sound(50, 50, 50, 50, 300);
-    }
-#endif
-    Utils::handleSound();
-
-    ctrlState.fHexOnOld = ctrlState.fHexOn;
-    delay(1000);
+  //ret = core->loop();
+  if (fAdjustLegPositions) {
+    printf(F("adjusting body height\n"));
+    core->adjustLegPosToBodyHeight();
+    core->loop(); // actual movement execution of servos or shut them down (no power to servos)
+  }
 }
-
-/*
-
-        // Double leg lift height
-        if (BUTTON_PRESSED(dwButton, INPUT_OPT_R1)) {
-            Utils::sound(300, 0, 0, 50, 300);
-            mBoolDoubleHeight = !mBoolDoubleHeight;
-            if (mBoolDoubleHeight)
-                ctrlState.sLegLiftHeight = 80;
-            else
-                ctrlState.sLegLiftHeight = 50;
-        }
-
-        // Double Travel Length
-        if (BUTTON_PRESSED(dwButton, INPUT_OPT_R2)) {
-            Utils::sound(300, 0, 0, 50, 300);
-            mBoolDblTravel = !mBoolDblTravel;
-        }
-
-        if (mBoolWalkMode2)
-            ctrlState.c3dTravelLen.z = (ry - 128); //Right Stick Up/Down
-        else {
-            ctrlState.c3dTravelLen.x = -(lx - 128);
-            ctrlState.c3dTravelLen.z = (ly - 128);
-        }
-
-        if (!mBoolDblTravel) {
-            ctrlState.c3dTravelLen.x = ctrlState.c3dTravelLen.x / 2;
-            ctrlState.c3dTravelLen.z = ctrlState.c3dTravelLen.z / 2;
-        }
-
-        ctrlState.c3dTravelLen.y = -(rx - 128)/4; //Right Stick Left/Right
-    }
-
-    if (ctrlState.fHexOn)
-        mColor = 1 + mModeControl + (mBoolDblTravel ? 4 : 0);
-
-    //[Translate functions]
-    mBodyYShift = 0;
-    if (mModeControl == MODE_TRANSLATE) {
-        ctrlState.c3dBodyPos.x = (ly - 128)/2;
-        ctrlState.c3dBodyPos.z = -(ly - 128)/3;
-        ctrlState.c3dBodyRot.y = (rx - 128)*2;
-        mBodyYShift = (-(ry - 128)/2);
-    } else if (mModeControl == MODE_ROTATE) {
-        ctrlState.c3dBodyRot.x = (ly - 128);
-        ctrlState.c3dBodyRot.y = (rx - 128)*2;
-        ctrlState.c3dBodyRot.z = (lx - 128);
-        mBodyYShift = (-(ry - 128)/2);
-    } else if (mModeControl == MODE_SINGLE_LEG) {
-        if (BUTTON_PRESSED(dwButton, INPUT_OPT_SEL)) { // Select Button Test
-            Utils::sound(300, 0, 0, 50, 300);
-            if (ctrlState.bSingleLegCurSel < 5)
-                ctrlState.bSingleLegCurSel = ctrlState.bSingleLegCurSel + 1;
-            else
-                ctrlState.bSingleLegCurSel = 0;
-        }
-        ctrlState.c3dSingleLeg.x = (lx - 128) / 2;     // Left Stick Right/Left
-        ctrlState.c3dSingleLeg.y = (ry - 128) / 10;    // Right Stick Up/Down
-        ctrlState.c3dSingleLeg.z = (ly - 128) / 2;     // Left Stick Up/Down
-
-        // Hold single leg in place
-        if (BUTTON_PRESSED(dwButton, INPUT_OPT_R2)) {
-            Utils::sound(300, 0, 0, 50, 300);
-            ctrlState.fSingleLegHold = !ctrlState.fSingleLegHold;
-        }
-    }
-
-    ctrlState.bInputTimeDelay = 128 - max( max(abs(lx - 128), abs(ly - 128)),
-                                             abs(rx - 128));
-    ctrlState.c3dBodyPos.y = min(max(mBodyYOffset + mBodyYShift,  0), MAX_BODY_Y);
-
-loop_exit:
-    if (fAdjustLegPositions)
-        core->adjustLegPosToBodyHeight();
-
-    showLED(mColor);
-
-    ret = core->loop();
-#if 0
-    if (ctrlState.fHexOn && (ret & PhoenixCore::STATUS_BATT_FAIL)) {
-        turnOff();
-        ctrlState.c3dBodyPos.y = 0;
-        core->adjustLegPosToBodyHeight();
-        core->loop();
-    } else if (ret & PhoenixCore::STATUS_BATT_WARN) {
-        Utils::sound(50, 50, 50, 50, 300);
-    }
-#endif
-    Utils::handleSound();
-
-    ctrlState.fHexOnOld = ctrlState.fHexOn;
-}
-*/
-
-
