@@ -57,7 +57,7 @@ u8        mColor;
 s16       mBodyYOffset;
 u16       mErrorCnt;
 s16       mBodyYShift;
-//u8        mModeControl;
+u8        mModeControl;
 bool      mBoolDoubleHeight;
 bool      mBoolDblTravel;
 bool      mBoolWalkMode2;
@@ -128,7 +128,7 @@ void setup()
     mBodyYShift  = 0;
     mErrorCnt    = 0;
 
-//    mModeControl      = MODE_WALK;
+    mModeControl      = MODE_WALK;
     mBoolDoubleHeight = FALSE;
     mBoolDblTravel    = FALSE;
     mBoolWalkMode2    = FALSE;
@@ -176,86 +176,35 @@ void setup()
 
 #define BUTTON_PRESSED(stat, mask) (stat & (mask))
 
-void turnOff(void) {
-  mBodyYOffset = 0;
-  mBodyYShift  = 0;
-  core->initCtrl();
-  ctrlState.fHexOnOld = FALSE;
+void turnOff(void)
+{
+    mBodyYOffset = 0;
+    mBodyYShift  = 0;
+    core->initCtrl();
+    Utils::sound(400, 0, 0, 100, 300);
 }
-
-void turnOn(void) {
-}
-
-void travel(u8 lx, u8 ly) {
-  ctrlState.c3dTravelLen.x = -(lx - 128);
-  ctrlState.c3dTravelLen.z = (ly - 128);
-}
-
-/*
-  translate
-  rx & ry when less than 128 the height of pod goes up
-  rx & ry when more than 128 the pod twists clockwise
-  lx & ly when more than 128 the slants to front left corner
-  lx & ly when less than 128 the slants to bottom right corner
-  lx when less or more than 128 no changes
-  ly when more than 128 slants to front left corner
-  ly when less than 128 slants to bottom right corner
-  ry when less than 128 back goes down front stays same level
-  ry when more than 128 no changes
-  rx when more than 128 body same level but twisting clockwise at same spot
-  rx when less than 128 body same level but twisting anticlockwise at same spot
-  */
-void translate(u8 lx, u8 ly, u8 rx, u8 ry) {
-  ctrlState.c3dBodyPos.x = (ly - 128)/2;
-  ctrlState.c3dBodyPos.z = -(ly - 128)/3;
-  ctrlState.c3dBodyRot.y = (rx - 128)*2;
-  mBodyYShift = (-(ry - 128)/2);
-  ctrlState.bInputTimeDelay = 128 - max( max(abs(lx - 128), abs(ly - 128)),
-                                         abs(rx - 128));
-  ctrlState.c3dBodyPos.y = min(max(mBodyYOffset + mBodyYShift,  0), MAX_BODY_Y);
-}
-
-void update_servos() {
-  printf(F("adjusting body height\n"));
-  core->adjustLegPosToBodyHeight();
-  // the loop function below does the actual movement execution of servos or
-  // shuts them all down (no power to servos)
-  core->loop();
-}
-
-int rr(128);
 
 
 void loop() {
   u32  dwButton;
   u8   lx, ly, rx, ry;
   dwButton = input->get(&lx, &ly, &rx, &ry);
-  bool fAdjustLegPositions = FALSE;
-
   if (!dwButton) {
-    return;
+    goto loop_exit;
   }
   if (BUTTON_PRESSED(dwButton, INPUT_TOGGLE_ON_OFF)) {
     if (ctrlState.fHexOn) {
       ctrlState.fHexOn = FALSE;
-      turnOff();
       printf(F("OFF\n"));
     } else {
       ctrlState.fHexOn = TRUE;
-      turnOn();
       printf(F("ON\n"));
     }
   }
-  else if (BUTTON_PRESSED(dwButton, PSB_CIRCLE)) {
-    translate(128, 128, --rr, 128);
-    printf(F("psb circle rr:%d\n"), rr);
+  if (!ctrlState.fHexOn) {
+    goto loop_exit;
   }
-  else if (BUTTON_PRESSED(dwButton, PSB_SQUARE)) {
-    travel(170, 170);
-    printf(F("psb square rr:%d\n"), rr);
-  }
-  else {
-    return;
-  }
-  update_servos();
+loop_exit:
+  //ret = core->loop();
+  ctrlState.fHexOnOld = ctrlState.fHexOn;
 }

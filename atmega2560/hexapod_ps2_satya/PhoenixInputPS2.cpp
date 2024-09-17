@@ -150,7 +150,12 @@ u32 PhoenixInputPS2::get(u8 *lx, u8 *ly, u8 *rx, u8 *ry)
     if (mPS2.Button(PSB_CIRCLE)) {
         //case ',':
       printf(F("single leg\n"));
-      return INPUT_TOGGLE_SINGLE_LEG;
+      return PSB_CIRCLE;
+    }
+    if (mPS2.Button(PSB_SQUARE)) {
+        //case ',':
+      printf(F("square leg\n"));
+      return PSB_SQUARE;
     }
     // CROSS Button Test
     if (mPS2.Button(PSB_CROSS)) {
