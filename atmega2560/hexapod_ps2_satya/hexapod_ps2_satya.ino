@@ -186,9 +186,11 @@ void turnOff(void) {
 void turnOn(void) {
 }
 
-void travel(u8 lx, u8 ly) {
+void travel(u8 lx, u8 ly, u8 rx) {
+  ctrlState.sLegLiftHeight = 80;
   ctrlState.c3dTravelLen.x = -(lx - 128);
   ctrlState.c3dTravelLen.z = (ly - 128);
+  //ctrlState.c3dTravelLen.y = -(rx - 128)/4; //Right Stick Left/Right
 }
 
 /*
@@ -251,7 +253,8 @@ void loop() {
     printf(F("psb circle rr:%d\n"), rr);
   }
   else if (BUTTON_PRESSED(dwButton, PSB_SQUARE)) {
-    travel(170, 170);
+    travel(170, 170, 128);
+    ctrlState.bGaitType = 5;
     printf(F("psb square rr:%d\n"), rr);
   }
   else {
