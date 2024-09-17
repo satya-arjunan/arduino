@@ -183,6 +183,12 @@ void turnOff(void) {
   ctrlState.fHexOnOld = FALSE;
 }
 
+void turnOn(void) {
+  /*core->init();
+  ctrlState.fHexOnOld = TRUE;
+  */
+}
+
 void loop() {
   u32  dwButton;
   u8   lx, ly, rx, ry;
@@ -199,6 +205,7 @@ void loop() {
       printf(F("OFF\n"));
     } else {
       ctrlState.fHexOn = TRUE;
+      turnOn();
       printf(F("ON\n"));
     }
     fAdjustLegPositions = TRUE;

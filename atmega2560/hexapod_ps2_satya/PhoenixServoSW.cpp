@@ -34,12 +34,12 @@ static const u8 TBL_TARS_PIN[] PROGMEM = {
 #endif
 
 static const s16 TBL_LEGS_OFFSET[] PROGMEM = {
-    0,    0,    0,
-    0,    0,    0,
-    0,    0,    0,
-    0,    0,    0,
-    0,    0,    0,
-    0,    0,    0,
+    0, -150,  -70,
+    0, -115,  160,
+    0,  -55,   80,
+    0,   45,    0,
+    0, -115,  165,
+    0, -135,   60,
 };
 
 PhoenixServoSW::PhoenixServoSW(void)
@@ -56,7 +56,6 @@ void PhoenixServoSW::loadServosConfig(void)
     int   i;
 
     memset(mServoOffsets, 0, sizeof(mServoOffsets));
-    printf(F("Loading servo config\n"));
 
     if (EEPROM.read(0) == CONFIG_NUM_LEGS * CONFIG_DOF_PER_LEG) {
         printf(F("Load from EEPROM !!\n"));
@@ -73,7 +72,6 @@ void PhoenixServoSW::loadServosConfig(void)
     printf(F("Load default !!\n"));
     for (i = 0; i < CONFIG_NUM_LEGS * CONFIG_DOF_PER_LEG; i++) {
         mServoOffsets[i] = (s16)pgm_read_word(&TBL_LEGS_OFFSET[i]);
-        printf(F("offset:%d %d\n"), i, mServoOffsets[i]);
     }
 }
 
