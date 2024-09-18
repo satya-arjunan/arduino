@@ -29,9 +29,11 @@
 #define INPUT_OPT_R2                0x00100
 #define INPUT_OPT_R1                0x00200
 #define INPUT_TOGGLE_WALK           0x00400
+#define INPUT_ON                    0x00800
 #define INPUT_BODY_UP               0x01000
 #define INPUT_BODY_DOWN             0x02000
 #define INPUT_TOGGLE_BODY_HEIGHT    0x04000
+#define INPUT_OFF                   0x08000
 #define INPUT_LEFT_ANALOG           0x10000
 #define INPUT_RIGHT_ANALOG          0x20000
 #define INPUT_BUTTON_MASK           0x0ffff

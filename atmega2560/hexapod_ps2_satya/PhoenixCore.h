@@ -34,8 +34,8 @@ typedef struct {
 
 
 typedef struct {
-    bool        fHexOn;             // Switch to turn on Phoenix
-    bool        fHexOnOld;
+    bool        fHexOn = FALSE;             // Switch to turn on Phoenix
+    bool        fHexOnOld = FALSE;
 
     //Body position
     COORD3D     c3dBodyPos;
@@ -108,7 +108,6 @@ private:
     u8          mHalfLiftHeight;      //If TRUE the outer positions of the ligted legs will be half height
     u8          mStepsInGait;         //Number of steps in gait
     u8          mGaitStep;            //Actual doGait step
-    u8          mGaitLegInits[CONFIG_NUM_LEGS];        //init position of the leg
 
     s32         mGaitPosXs[CONFIG_NUM_LEGS];         //Array containing Relative X position corresponding to the Gait
     s32         mGaitPosYs[CONFIG_NUM_LEGS];         //Array containing Relative Y position corresponding to the Gait
@@ -143,6 +142,7 @@ private:
 
 
 public:
+    u8          mGaitLegInits[CONFIG_NUM_LEGS];        //init position of the leg
     enum {
         IDX_RR = 0,
         IDX_RM,

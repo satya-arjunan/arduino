@@ -92,84 +92,75 @@ u32 PhoenixInputPS2::get(u8 *lx, u8 *ly, u8 *rx, u8 *ry)
     *rx = mRX;
     *ry = mRY;
     if (mPS2.NewButtonState()) {
-
-    if (mPS2.Button(PSB_START)) {
-      *lx = mLX = 128;
-      *ly = mLY = 128;
-      *rx = mRX = 128;
-      *ry = mRY = 128;
-      printf(F("start/stop\n"));
-      return INPUT_TOGGLE_ON_OFF; //on or off
-    }
-    // D-Up - Button Test
-    if (mPS2.Button(PSB_PAD_UP)) {
-      printf(F("body up\n"));
-      return INPUT_BODY_UP;
-    }
-    // D-Down - Button Test
-    if (mPS2.Button(PSB_PAD_DOWN)) {
-      printf(F("body down\n"));
-      return INPUT_BODY_DOWN;
-    }
-    // D-Right - Button Test
-    if (mPS2.Button(PSB_PAD_RIGHT)) {
-      printf(F("speed down\n"));
-      return INPUT_SPEED_DOWN;
-    }
-    // D-Left - Button Test
-    if (mPS2.Button(PSB_PAD_LEFT)) {
-      printf(F("speed up\n"));
-      return INPUT_SPEED_UP;
-    }
-    // Select Button Test
-    if (mPS2.Button(PSB_SELECT)) {
-      printf(F("opt_sel\n"));
-      return INPUT_OPT_SEL;
-    }
-    // L1 Button Test
-    if (mPS2.Button(PSB_L1)) {
-      printf(F("translate\n"));
-      return INPUT_TOGGLE_SHIFT; // translate
-    }
-    // L2 Button Test
-    if (mPS2.Button(PSB_L2)) {
-      printf(F("rotate\n"));
-      return INPUT_TOGGLE_ROTATE;
-    }
-    // R1 Button Test
-    if (mPS2.Button(PSB_R1)) {
-      printf(F("R1\n"));
-      return INPUT_OPT_R1;
-    }
-    // R2 Button Test
-    if (mPS2.Button(PSB_R2)) {
-      printf(F("R2\n"));
-      return INPUT_OPT_R2;
-    }
-    // O - Circle Button Test
-    if (mPS2.Button(PSB_CIRCLE)) {
-        //case ',':
-      printf(F("single leg\n"));
-      return PSB_CIRCLE;
-    }
-    if (mPS2.Button(PSB_SQUARE)) {
-        //case ',':
-      printf(F("square leg\n"));
-      return PSB_SQUARE;
-    }
-    // CROSS Button Test
-    if (mPS2.Button(PSB_CROSS)) {
-        //case '.':
-      printf(F("balance\n"));
-      return INPUT_TOGGLE_BALANCE;
-    }
-    //Stand up, sit down  
-    // Triangle - Button Test
-    if (mPS2.Button(PSB_TRIANGLE)) {
-        //case '/':
-      printf(F("height\n"));
-      return INPUT_TOGGLE_BODY_HEIGHT;
-    }
+      if (mPS2.Button(PSB_START)) {
+        return PSB_START;
+      }
+      if (mPS2.Button(PSB_CROSS)) {
+        return PSB_CROSS;
+      }
+      // D-Up - Button Test
+      if (mPS2.Button(PSB_PAD_UP)) {
+        printf(F("body up\n"));
+        return INPUT_BODY_UP;
+      }
+      // D-Down - Button Test
+      if (mPS2.Button(PSB_PAD_DOWN)) {
+        printf(F("body down\n"));
+        return INPUT_BODY_DOWN;
+      }
+      // D-Right - Button Test
+      if (mPS2.Button(PSB_PAD_RIGHT)) {
+        printf(F("speed down\n"));
+        return INPUT_SPEED_DOWN;
+      }
+      // D-Left - Button Test
+      if (mPS2.Button(PSB_PAD_LEFT)) {
+        printf(F("speed up\n"));
+        return INPUT_SPEED_UP;
+      }
+      // Select Button Test
+      if (mPS2.Button(PSB_SELECT)) {
+        printf(F("opt_sel\n"));
+        return INPUT_OPT_SEL;
+      }
+      // L1 Button Test
+      if (mPS2.Button(PSB_L1)) {
+        printf(F("translate\n"));
+        return INPUT_TOGGLE_SHIFT; // translate
+      }
+      // L2 Button Test
+      if (mPS2.Button(PSB_L2)) {
+        printf(F("rotate\n"));
+        return INPUT_TOGGLE_ROTATE;
+      }
+      // R1 Button Test
+      if (mPS2.Button(PSB_R1)) {
+        printf(F("R1\n"));
+        return INPUT_OPT_R1;
+      }
+      // R2 Button Test
+      if (mPS2.Button(PSB_R2)) {
+        printf(F("R2\n"));
+        return INPUT_OPT_R2;
+      }
+      // O - Circle Button Test
+      if (mPS2.Button(PSB_CIRCLE)) {
+          //case ',':
+        printf(F("single leg\n"));
+        return PSB_CIRCLE;
+      }
+      if (mPS2.Button(PSB_SQUARE)) {
+          //case ',':
+        printf(F("square leg\n"));
+        return PSB_SQUARE;
+      }
+      //Stand up, sit down  
+      // Triangle - Button Test
+      if (mPS2.Button(PSB_TRIANGLE)) {
+          //case '/':
+        printf(F("height\n"));
+        return INPUT_TOGGLE_BODY_HEIGHT;
+      }
     }
     return 0;
 }

@@ -217,17 +217,90 @@ void translate(u8 lx, u8 ly, u8 rx, u8 ry) {
   ctrlState.c3dBodyPos.y = min(max(mBodyYOffset + mBodyYShift,  0), MAX_BODY_Y);
 }
 
-void update_servos() {
-  printf(F("adjusting body height\n"));
+void move_3_legs_updown() {
   core->adjustLegPosToBodyHeight();
+  core->loop();
+}
+
+void move_up_then_none() {
   // the loop function below does the actual movement execution of servos or
   // shuts them all down (no power to servos)
   core->loop();
 }
 
+void print_ctrl_state() {
+  printf(F("pos x:%d y:%d z:%d\n"),
+         (int)ctrlState.c3dBodyPos.x,
+         (int)ctrlState.c3dBodyPos.y,
+         (int)ctrlState.c3dBodyPos.z);
+  printf(F("rot x:%d y:%d z:%d\n"),
+         (int)ctrlState.c3dBodyRot.x,
+         (int)ctrlState.c3dBodyRot.y,
+         (int)ctrlState.c3dBodyRot.z);
+  printf(F("rotoff x:%d y:%d z:%d\n"),
+         (int)ctrlState.c3dBodyRotOff.x,
+         (int)ctrlState.c3dBodyRotOff.y,
+         (int)ctrlState.c3dBodyRotOff.z);
+  printf(F("len x:%d y:%d z:%d\n"),
+         (int)ctrlState.c3dTravelLen.x,
+         (int)ctrlState.c3dTravelLen.y,
+         (int)ctrlState.c3dTravelLen.z);
+  printf(F("gait:%d\n"), (unsigned)ctrlState.bGaitType);
+  printf(F("lift height:%d\n"), (int)ctrlState.sLegLiftHeight);
+  printf(F("gait leg init:%d %d %d %d %d %d\n"),
+         (unsigned)core->mGaitLegInits[0],
+         (unsigned)core->mGaitLegInits[1],
+         (unsigned)core->mGaitLegInits[2],
+         (unsigned)core->mGaitLegInits[3],
+         (unsigned)core->mGaitLegInits[4],
+         (unsigned)core->mGaitLegInits[5]);
+}
+
+void update_servos() {
+  /*
+  ctrlState.c3dBodyPos.x = 128;
+  ctrlState.c3dBodyPos.z = 128;
+  ctrlState.c3dBodyPos.y = 128;
+  ctrlState.c3dTravelLen.x = 128;
+  ctrlState.c3dTravelLen.y = 128;
+  ctrlState.c3dTravelLen.z = 128;
+  ctrlState.c3dBodyRot.x = 128;
+  ctrlState.c3dBodyRot.y = 128;
+  ctrlState.c3dBodyRot.z = 128;
+  */
+  printf(F("before\n"));
+  print_ctrl_state();
+  move_up_then_none();
+  //move_3_legs_updown();
+}
+
 int rr(128);
 
+void loop() {
+  u32  dwButton;
+  u8   lx, ly, rx, ry;
+  dwButton = input->get(&lx, &ly, &rx, &ry);
+  if (BUTTON_PRESSED(dwButton, PSB_START)) {
+      printf(F("turn on\n"));
+      core->init();
+      ctrlState.fHexOn = TRUE;
+      core->loop();
+      return;
+  }
+  if (BUTTON_PRESSED(dwButton, PSB_CROSS)) {
+      printf(F("turn off\n"));
+      ctrlState.fHexOn = FALSE;
+      core->loop();
+      return;
+  }
+  else if (BUTTON_PRESSED(dwButton, PSB_SQUARE)) {
+    travel(170, 170, 128);
+    ctrlState.bGaitType = 5;
+    update_servos();
+  }
+}
 
+/*
 void loop() {
   u32  dwButton;
   u8   lx, ly, rx, ry;
@@ -262,3 +335,4 @@ void loop() {
   }
   update_servos();
 }
+*/
