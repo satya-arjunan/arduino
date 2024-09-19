@@ -81,12 +81,10 @@ u32 PhoenixInputPS2::get(u8 *lx, u8 *ly, u8 *rx, u8 *ry)
     //cmd = mSerial->read();
     //printf(F("input from serial monitor:%c\n"), cmd);
     
-    /*
     mLX = mPS2.Analog(PSS_LX);
     mLY = mPS2.Analog(PSS_LY);
     mRY = mPS2.Analog(PSS_RY);
     mRX = mPS2.Analog(PSS_RX);
-    */
     *lx = mLX;
     *ly = mLY;
     *rx = mRX;
