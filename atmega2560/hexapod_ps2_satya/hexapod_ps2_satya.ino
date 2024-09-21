@@ -293,6 +293,22 @@ bool check_ps2(u8 &lx, u8 &ly, u8 &rx, u8 &ry) {
   return false;
 }
 
+void move_leg_rf(u8 x, u8 y, u8 z) {
+  ctrlState.bSingleLegCurSel = 1;
+  ctrlState.c3dSingleLeg.x = (x - 128) / 2;     // Left Stick Right/Left
+  ctrlState.c3dSingleLeg.z = (z - 128) / 2;     // Left Stick Up/Down
+  ctrlState.c3dSingleLeg.y = (y - 128) / 2;    // Right Stick Up/Down
+  ctrlState.bInputTimeDelay = 128 - max( max(abs(x - 128), abs(y - 128)),
+                                         abs(z - 128));
+}
+
+void finalise_loop() {
+  ctrlState.c3dBodyPos.y = min(max(mBodyYOffset + mBodyYShift,  0),
+                               MAX_BODY_Y);
+  ctrlState.bGaitType = 5;
+  core->adjustLegPosToBodyHeight();
+  core->loop();
+}
 
 void loop() {
   u8   lx, ly, rx, ry;
@@ -300,19 +316,24 @@ void loop() {
     return;
   }
   if (mModeControl == MODE_WALK) {
+    move_leg_rf(lx, ry, ly);
+    finalise_loop();
+    return;
+  }
+}
+
+/*
+// single leg ps2 control
+void loop() {
+  u8   lx, ly, rx, ry;
+  if (check_ps2(lx, ly, rx, ry) == true) {
+    return;
+  }
+  if (mModeControl == MODE_WALK) {
     ctrlState.bSingleLegCurSel = 1;
-    /*
-    if (ctrlState.bSingleLegCurSel < 5) {
-      ctrlState.bSingleLegCurSel = ctrlState.bSingleLegCurSel + 1;
-    }
-    else {
-      ctrlState.bSingleLegCurSel = 0;
-    }
-    */
     ctrlState.c3dSingleLeg.x = (lx - 128) / 2;     // Left Stick Right/Left
     ctrlState.c3dSingleLeg.z = (ly - 128) / 2;     // Left Stick Up/Down
     ctrlState.c3dSingleLeg.y = (ry - 128) / 2;    // Right Stick Up/Down
-    //ctrlState.fSingleLegHold = !ctrlState.fSingleLegHold;
     ctrlState.bInputTimeDelay = 128 - max( max(abs(lx - 128), abs(ly - 128)),
                                            abs(rx - 128));
     ctrlState.c3dBodyPos.y = min(max(mBodyYOffset + mBodyYShift,  0),
@@ -323,6 +344,7 @@ void loop() {
     return;
   }
 }
+*/
 
 /*
 // working walk
