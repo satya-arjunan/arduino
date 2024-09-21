@@ -274,8 +274,58 @@ void update_servos() {
   //move_3_legs_updown();
 }
 
-int rr(128);
+bool check_ps2(u8 &lx, u8 &ly, u8 &rx, u8 &ry) {
+  u32  dwButton;
+  dwButton = input->get(&lx, &ly, &rx, &ry);
+  if (BUTTON_PRESSED(dwButton, PSB_START)) {
+    printf(F("turn on\n"));
+    core->init();
+    ctrlState.fHexOn = TRUE;
+    core->loop();
+    return true;
+  }
+  if (BUTTON_PRESSED(dwButton, PSB_CROSS)) {
+    printf(F("turn off\n"));
+    ctrlState.fHexOn = FALSE;
+    core->loop();
+    return true;
+  }
+  return false;
+}
 
+
+void loop() {
+  u8   lx, ly, rx, ry;
+  if (check_ps2(lx, ly, rx, ry) == true) {
+    return;
+  }
+  if (mModeControl == MODE_WALK) {
+    ctrlState.bSingleLegCurSel = 1;
+    /*
+    if (ctrlState.bSingleLegCurSel < 5) {
+      ctrlState.bSingleLegCurSel = ctrlState.bSingleLegCurSel + 1;
+    }
+    else {
+      ctrlState.bSingleLegCurSel = 0;
+    }
+    */
+    ctrlState.c3dSingleLeg.x = (lx - 128) / 2;     // Left Stick Right/Left
+    ctrlState.c3dSingleLeg.z = (ly - 128) / 2;     // Left Stick Up/Down
+    ctrlState.c3dSingleLeg.y = (ry - 128) / 2;    // Right Stick Up/Down
+    //ctrlState.fSingleLegHold = !ctrlState.fSingleLegHold;
+    ctrlState.bInputTimeDelay = 128 - max( max(abs(lx - 128), abs(ly - 128)),
+                                           abs(rx - 128));
+    ctrlState.c3dBodyPos.y = min(max(mBodyYOffset + mBodyYShift,  0),
+                                 MAX_BODY_Y);
+    ctrlState.bGaitType = 5;
+    core->adjustLegPosToBodyHeight();
+    core->loop();
+    return;
+  }
+}
+
+/*
+// working walk
 void loop() {
   u32  dwButton;
   u8   lx, ly, rx, ry;
@@ -305,10 +355,6 @@ void loop() {
       ctrlState.c3dTravelLen.x = ctrlState.c3dTravelLen.x / 2;
       ctrlState.c3dTravelLen.z = ctrlState.c3dTravelLen.z / 2;
       ctrlState.bInputTimeDelay = 50;
-      /*
-      ctrlState.bInputTimeDelay = 128 - max( max(abs(lx - 128), abs(ly - 128)),
-                                             abs(rx - 128));
-      */
       ctrlState.c3dBodyPos.y = min(max(mBodyYOffset + mBodyYShift,  0),
                                   MAX_BODY_Y);
       ctrlState.bGaitType = 5;
@@ -317,6 +363,7 @@ void loop() {
       return;
   }
 }
+*/
 
 /*
   if (BUTTON_PRESSED(dwButton, INPUT_TOGGLE_SHIFT)) {
@@ -386,6 +433,7 @@ void loop() {
   */
 
 /*
+int rr(128);
 void loop() {
   u32  dwButton;
   u8   lx, ly, rx, ry;
