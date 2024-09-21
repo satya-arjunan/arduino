@@ -298,15 +298,17 @@ void loop() {
   }
   if (mModeControl == MODE_WALK) {
       printf(F("lx:%d ly:%d rx:%d\n"), (int)lx, (int)ly, (int)rx);
-      ctrlState.sLegLiftHeight = 80;
+      ctrlState.sLegLiftHeight = 90;
       ctrlState.c3dTravelLen.x = -(lx - 128);
       ctrlState.c3dTravelLen.z = (ly - 128);
       ctrlState.c3dTravelLen.y = -(rx - 128)/4;
       ctrlState.c3dTravelLen.x = ctrlState.c3dTravelLen.x / 2;
       ctrlState.c3dTravelLen.z = ctrlState.c3dTravelLen.z / 2;
-      //ctrlState.bInputTimeDelay = 50;
+      ctrlState.bInputTimeDelay = 50;
+      /*
       ctrlState.bInputTimeDelay = 128 - max( max(abs(lx - 128), abs(ly - 128)),
                                              abs(rx - 128));
+      */
       ctrlState.c3dBodyPos.y = min(max(mBodyYOffset + mBodyYShift,  0),
                                   MAX_BODY_Y);
       ctrlState.bGaitType = 5;
