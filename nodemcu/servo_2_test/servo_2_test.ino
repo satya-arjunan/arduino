@@ -17,19 +17,19 @@ void setup() {
 
 
 void loop() {
- for (pos = 1; pos <= 90; pos += 1) { 
+ for (pos = 10; pos <= 80; pos += 20) { 
     servo.write(pos); 
     delay(15);
   }
-  for (pos = 90; pos >= 1; pos -= 1) {
+  for (pos = 80; pos >= 10; pos -= 10) {
     servo.write(pos);
     delay(15);
   }
-  for (posi = 1; posi <=90; posi += 1) {
+  for (posi = 10; posi <=80; posi += 10) {
     servoa.write(posi);
     delay(15);
     }
-  for (posi = 90; posi >= 1; posi -= 1) {
+  for (posi = 80; posi >= 10; posi -= 10) {
     servoa.write(posi);
     delay(15);
   }
