@@ -124,7 +124,7 @@ void setup()
     pinMode(PIN_SOUND, OUTPUT);
 
     mColor       = 0;
-    mBodyYOffset = 0;
+    mBodyYOffset = 40;
     mBodyYShift  = 0;
     mErrorCnt    = 0;
 
