@@ -143,8 +143,8 @@ void setup()
 	input->init(NULL);
 
 #elif (CONFIG_CTRL_TYPE == CONFIG_CTRL_TYPE_PS2)
-    //CONFIG_CTRL_SERIAL.begin(CONFIG_CTRL_BAUD);
-    input = new PhoenixInputPS2(&CONFIG_DBG_SERIAL);
+    CONFIG_CTRL_SERIAL.begin(CONFIG_CTRL_BAUD);
+    input = new PhoenixInputPS2(&CONFIG_CTRL_SERIAL);
 	input->init(NULL);
 
 #elif (CONFIG_CTRL_TYPE == CONFIG_CTRL_TYPE_BTCON)
@@ -164,7 +164,7 @@ void setup()
     #if (CONFIG_BOARD == CONFIG_NASSPOP_MINI) && defined(CONFIG_SERVO_USC_TX)
         servo = new PhoenixServoUSC();
     #else
-        servo = new PhoenixServoUSC(&CONFIG_DBG_SERIAL);
+        servo = new PhoenixServoUSC(&CONFIG_CTRL_SERIAL);
     #endif
 
 #endif
@@ -357,26 +357,18 @@ void loop() {
 
 // working walk
 void loop() {
-ctrlState.fHexOn = FALSE;
-core->loop();
-return;
-  /*
-  ctrlState.fHexOn = FALSE;
-  core->loop();
-  return;
-  */
   u32  dwButton;
   u8   lx, ly, rx, ry;
   dwButton = input->get(&lx, &ly, &rx, &ry);
   if (BUTTON_PRESSED(dwButton, PSB_START)) {
-    printf(F("turn on\n"));
+    //printf(F("turn on\n"));
     core->init();
     ctrlState.fHexOn = TRUE;
     core->loop();
     return;
   }
   if (BUTTON_PRESSED(dwButton, PSB_CROSS)) {
-    printf(F("turn off\n"));
+    //printf(F("turn off\n"));
     ctrlState.fHexOn = FALSE;
     core->loop();
     return;
@@ -397,7 +389,7 @@ return;
                                              abs(rx - 128));
       ctrlState.c3dBodyPos.y = min(max(mBodyYOffset + mBodyYShift,  0),
                                   MAX_BODY_Y);
-      ctrlState.bGaitType = 1;
+      ctrlState.bGaitType = 5;
       core->adjustLegPosToBodyHeight();
       core->loop();
       return;

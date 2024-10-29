@@ -37,7 +37,6 @@ void PhoenixInputSerial::init(s8 (*callback)(u8 cmd, u8 *data, u8 size, u8 *res)
     mSerial->begin(CONFIG_CTRL_BAUD);
 #endif
     printf(F("%s\n"), __PRETTY_FUNCTION__);
-    printf(F("available: %d\n"), mSerial->available());
 }
 
 //==============================================================================

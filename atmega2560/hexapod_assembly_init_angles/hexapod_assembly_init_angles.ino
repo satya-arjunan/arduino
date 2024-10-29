@@ -47,25 +47,25 @@ Servo rr_tibia;
 
 
 void setup() { 
-	lf_coxa.attach(PIN_LF_COXA);
-  lf_femur.attach(PIN_LF_FEMUR);
-  lf_tibia.attach(PIN_LF_TIBIA);
-  lm_coxa.attach(PIN_LM_COXA);
-  lm_femur.attach(PIN_LM_FEMUR);
-  lm_tibia.attach(PIN_LM_TIBIA);
-  lr_coxa.attach(PIN_LR_COXA);
-  lr_femur.attach(PIN_LR_FEMUR);
-  lr_tibia.attach(PIN_LR_TIBIA);
+	lf_coxa.attach(PIN_LF_COXA, 500, 2500);
+  lf_femur.attach(PIN_LF_FEMUR, 500, 2500);
+  lf_tibia.attach(PIN_LF_TIBIA, 500, 2500);
+  lm_coxa.attach(PIN_LM_COXA, 500, 2500);
+  lm_femur.attach(PIN_LM_FEMUR, 500, 2500);
+  lm_tibia.attach(PIN_LM_TIBIA, 500, 2500);
+  lr_coxa.attach(PIN_LR_COXA, 500, 2500);
+  lr_femur.attach(PIN_LR_FEMUR, 500, 2500);
+  lr_tibia.attach(PIN_LR_TIBIA, 500, 2500);
 
-  rf_coxa.attach(PIN_RF_COXA);
-  rf_femur.attach(PIN_RF_FEMUR);
-  rf_tibia.attach(PIN_RF_TIBIA);
-  rm_coxa.attach(PIN_RM_COXA);
-  rm_femur.attach(PIN_RM_FEMUR);
-  rm_tibia.attach(PIN_RM_TIBIA);
-  rr_coxa.attach(PIN_RR_COXA);
-  rr_femur.attach(PIN_RR_FEMUR);
-  rr_tibia.attach(PIN_RR_TIBIA);
+  rf_coxa.attach(PIN_RF_COXA, 500, 2500);
+  rf_femur.attach(PIN_RF_FEMUR, 500, 2500);
+  rf_tibia.attach(PIN_RF_TIBIA, 500, 2500);
+  rm_coxa.attach(PIN_RM_COXA, 500, 2500);
+  rm_femur.attach(PIN_RM_FEMUR, 500, 2500);
+  rm_tibia.attach(PIN_RM_TIBIA, 500, 2500);
+  rr_coxa.attach(PIN_RR_COXA, 500, 2500);
+  rr_femur.attach(PIN_RR_FEMUR, 500, 2500);
+  rr_tibia.attach(PIN_RR_TIBIA, 500, 2500);
 } 
 
 void write_pos(int pos) {

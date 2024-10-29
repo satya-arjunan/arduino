@@ -57,7 +57,7 @@ u8        mColor;
 s16       mBodyYOffset;
 u16       mErrorCnt;
 s16       mBodyYShift;
-u8        mModeControl;
+//u8        mModeControl;
 bool      mBoolDoubleHeight;
 bool      mBoolDblTravel;
 bool      mBoolWalkMode2;
@@ -128,7 +128,7 @@ void setup()
     mBodyYShift  = 0;
     mErrorCnt    = 0;
 
-    mModeControl      = MODE_WALK;
+//    mModeControl      = MODE_WALK;
     mBoolDoubleHeight = FALSE;
     mBoolDblTravel    = FALSE;
     mBoolWalkMode2    = FALSE;
@@ -143,8 +143,8 @@ void setup()
 	input->init(NULL);
 
 #elif (CONFIG_CTRL_TYPE == CONFIG_CTRL_TYPE_PS2)
-    //CONFIG_CTRL_SERIAL.begin(CONFIG_CTRL_BAUD);
-    input = new PhoenixInputPS2(&CONFIG_DBG_SERIAL);
+    CONFIG_CTRL_SERIAL.begin(CONFIG_CTRL_BAUD);
+    input = new PhoenixInputPS2(&CONFIG_CTRL_SERIAL);
 	input->init(NULL);
 
 #elif (CONFIG_CTRL_TYPE == CONFIG_CTRL_TYPE_BTCON)
@@ -164,7 +164,7 @@ void setup()
     #if (CONFIG_BOARD == CONFIG_NASSPOP_MINI) && defined(CONFIG_SERVO_USC_TX)
         servo = new PhoenixServoUSC();
     #else
-        servo = new PhoenixServoUSC(&CONFIG_DBG_SERIAL);
+        servo = new PhoenixServoUSC(&CONFIG_CTRL_SERIAL);
     #endif
 
 #endif
@@ -268,211 +268,31 @@ void update_servos() {
   ctrlState.c3dBodyRot.y = 128;
   ctrlState.c3dBodyRot.z = 128;
   */
-  //printf(F("before\n"));
-  //print_ctrl_state();
+  printf(F("before\n"));
+  print_ctrl_state();
   move_up_then_none();
   //move_3_legs_updown();
 }
 
-bool check_ps2(u8 &lx, u8 &ly, u8 &rx, u8 &ry) {
-  u32  dwButton;
-  dwButton = input->get(&lx, &ly, &rx, &ry);
-  if (BUTTON_PRESSED(dwButton, PSB_START)) {
-    printf(F("turn on\n"));
-    core->init();
-    ctrlState.fHexOn = TRUE;
-    core->loop();
-    return true;
-  }
-  if (BUTTON_PRESSED(dwButton, PSB_CROSS)) {
-    printf(F("turn off\n"));
-    ctrlState.fHexOn = FALSE;
-    core->loop();
-    return true;
-  }
-  return false;
-}
+int rr(128);
 
-
-void finalise_loop() {
-  ctrlState.c3dBodyPos.y = min(max(mBodyYOffset + mBodyYShift,  0),
-                               MAX_BODY_Y);
-  ctrlState.bGaitType = 5;
-  core->adjustLegPosToBodyHeight();
-  core->loop();
-}
-
-void move_leg(u8 x, u8 y, u8 z) {
-  u8   lx, ly, rx, ry;
-  if (check_ps2(lx, ly, rx, ry) == true) {
-    return;
-  }
-  ctrlState.c3dSingleLeg.x = (x - 128) / 2;     // Left Stick Right/Left
-  ctrlState.c3dSingleLeg.z = (z - 128) / 2;     // Left Stick Up/Down
-  ctrlState.c3dSingleLeg.y = (y - 128) / 2;    // Right Stick Up/Down
-  //ctrlState.bInputTimeDelay = 128 - max( max(abs(x - 128), abs(y - 128)),
-  //                                       abs(z - 128));
-  ctrlState.bInputTimeDelay = 0;
-  finalise_loop();
-}
-
-void move_leg_rf(u8 x, u8 y, u8 z) {
-  ctrlState.bSingleLegCurSel = 4;
-  move_leg(x, y, z);
-}
-
-/*
 void loop() {
-  move_leg_rf(128, 128, 80);
-  move_leg_rf(128, 128, 128);
-  delay(2000);
-  move_leg_rf(128, 128, 178);
-  delay(2000);
-}
-*/
-
-/*
-// single leg ps2 control
-void loop() {
-  u8   lx, ly, rx, ry;
-  if (check_ps2(lx, ly, rx, ry) == true) {
-    return;
-  }
-  if (mModeControl == MODE_WALK) {
-    ctrlState.bSingleLegCurSel = 1;
-    ctrlState.c3dSingleLeg.x = (lx - 128) / 2;     // Left Stick Right/Left
-    ctrlState.c3dSingleLeg.z = (ly - 128) / 2;     // Left Stick Up/Down
-    ctrlState.c3dSingleLeg.y = (ry - 128) / 2;    // Right Stick Up/Down
-    ctrlState.bInputTimeDelay = 128 - max( max(abs(lx - 128), abs(ly - 128)),
-                                           abs(rx - 128));
-    ctrlState.c3dBodyPos.y = min(max(mBodyYOffset + mBodyYShift,  0),
-                                 MAX_BODY_Y);
-    ctrlState.bGaitType = 5;
-    core->adjustLegPosToBodyHeight();
-    core->loop();
-    return;
-  }
-}
-*/
-
-// working walk
-void loop() {
-ctrlState.fHexOn = FALSE;
-core->loop();
-return;
-  /*
-  ctrlState.fHexOn = FALSE;
-  core->loop();
-  return;
-  */
   u32  dwButton;
   u8   lx, ly, rx, ry;
   dwButton = input->get(&lx, &ly, &rx, &ry);
   if (BUTTON_PRESSED(dwButton, PSB_START)) {
-    printf(F("turn on\n"));
-    core->init();
-    ctrlState.fHexOn = TRUE;
-    core->loop();
-    return;
+      ctrlState.fHexOn = TRUE;
+      core->loop();
+      return;
   }
-  if (BUTTON_PRESSED(dwButton, PSB_CROSS)) {
-    printf(F("turn off\n"));
-    ctrlState.fHexOn = FALSE;
-    core->loop();
-    return;
-  }
-  if (BUTTON_PRESSED(dwButton, PSB_SQUARE)) {
-      mModeControl = MODE_WALK;
-  }
-  if (mModeControl == MODE_WALK) {
-      //printf(F("lx:%d ly:%d rx:%d\n"), (int)lx, (int)ly, (int)rx);
-      ctrlState.sLegLiftHeight = 80;
-      ctrlState.c3dTravelLen.x = -(lx - 128);
-      ctrlState.c3dTravelLen.z = (ly - 128);
-      ctrlState.c3dTravelLen.y = -(rx - 128)/4;
-      ctrlState.c3dTravelLen.x = ctrlState.c3dTravelLen.x / 2;
-      ctrlState.c3dTravelLen.z = ctrlState.c3dTravelLen.z / 2;
-      //ctrlState.bInputTimeDelay = 50;
-      ctrlState.bInputTimeDelay = 128 - max( max(abs(lx - 128), abs(ly - 128)),
-                                             abs(rx - 128));
-      ctrlState.c3dBodyPos.y = min(max(mBodyYOffset + mBodyYShift,  0),
-                                  MAX_BODY_Y);
-      ctrlState.bGaitType = 1;
-      core->adjustLegPosToBodyHeight();
+  else if (BUTTON_PRESSED(dwButton, PSB_CROSS)) {
+      ctrlState.fHexOn = FALSE;
       core->loop();
       return;
   }
 }
 
 /*
-  if (BUTTON_PRESSED(dwButton, INPUT_TOGGLE_SHIFT)) {
-    if (mModeControl != MODE_TRANSLATE ) {
-      mModeControl = MODE_TRANSLATE;
-    }
-    else {
-      mModeControl = MODE_WALK;
-    }
-    printf(F("Toggle shift mode:%d\n"), mModeControl);
-  }
-  if (BUTTON_PRESSED(dwButton, INPUT_TOGGLE_ROTATE)) {
-    if (mModeControl != MODE_ROTATE) {
-      mModeControl = MODE_ROTATE;
-    }
-    else {
-      mModeControl = MODE_WALK;
-    }
-    printf(F("Toggle rotate mode:%d\n"), mModeControl);
-  }
-  if (mModeControl == MODE_WALK) {
-    if (BUTTON_PRESSED(dwButton, INPUT_OPT_SEL)) {
-      if (abs(ctrlState.c3dTravelLen.x) < CONFIG_TRAVEL_DEAD_ZONE &&
-          abs(ctrlState.c3dTravelLen.z) < CONFIG_TRAVEL_DEAD_ZONE &&
-          abs(ctrlState.c3dTravelLen.y*2) < CONFIG_TRAVEL_DEAD_ZONE) {
-        ctrlState.bGaitType = ctrlState.bGaitType + 1;
-        if (ctrlState.bGaitType < NUM_GAITS) {
-          Utils::sound(300, 0, 0, 50, 300);
-        }
-        else {
-          Utils::sound(100, 100, 0, 50, 300);
-          ctrlState.bGaitType = 0;
-        }
-        core->selectGait(ctrlState.bGaitType);
-        printf(F("GAIT:%d\n"), ctrlState.bGaitType);
-      } else {
-        printf(F("GAIT can not be changed:%d\n"), ctrlState.bGaitType);
-      }
-    }
-    // Double leg lift height
-    if (BUTTON_PRESSED(dwButton, INPUT_OPT_R1)) {
-      mBoolDoubleHeight = !mBoolDoubleHeight;
-      if (mBoolDoubleHeight) {
-        ctrlState.sLegLiftHeight = 80;
-      }
-      else {
-        ctrlState.sLegLiftHeight = 50;
-      }
-      // Double Travel Length
-      if (BUTTON_PRESSED(dwButton, INPUT_OPT_R2)) {
-        mBoolDblTravel = !mBoolDblTravel;
-      }
-      if (mBoolWalkMode2) {
-        ctrlState.c3dTravelLen.z = (ry - 128); //Right Stick Up/Down
-      }
-      else {
-        ctrlState.c3dTravelLen.x = -(lx - 128);
-        ctrlState.c3dTravelLen.z = (ly - 128);
-      }
-      if (!mBoolDblTravel) {
-        ctrlState.c3dTravelLen.x = ctrlState.c3dTravelLen.x / 2;
-        ctrlState.c3dTravelLen.z = ctrlState.c3dTravelLen.z / 2;
-      }
-      ctrlState.c3dTravelLen.y = -(rx - 128)/4; //Right Stick Left/Right
-    }
-  }
-  */
-
-/*
-int rr(128);
 void loop() {
   u32  dwButton;
   u8   lx, ly, rx, ry;

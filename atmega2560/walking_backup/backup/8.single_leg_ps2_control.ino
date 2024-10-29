@@ -143,8 +143,8 @@ void setup()
 	input->init(NULL);
 
 #elif (CONFIG_CTRL_TYPE == CONFIG_CTRL_TYPE_PS2)
-    //CONFIG_CTRL_SERIAL.begin(CONFIG_CTRL_BAUD);
-    input = new PhoenixInputPS2(&CONFIG_DBG_SERIAL);
+    CONFIG_CTRL_SERIAL.begin(CONFIG_CTRL_BAUD);
+    input = new PhoenixInputPS2(&CONFIG_CTRL_SERIAL);
 	input->init(NULL);
 
 #elif (CONFIG_CTRL_TYPE == CONFIG_CTRL_TYPE_BTCON)
@@ -164,7 +164,7 @@ void setup()
     #if (CONFIG_BOARD == CONFIG_NASSPOP_MINI) && defined(CONFIG_SERVO_USC_TX)
         servo = new PhoenixServoUSC();
     #else
-        servo = new PhoenixServoUSC(&CONFIG_DBG_SERIAL);
+        servo = new PhoenixServoUSC(&CONFIG_CTRL_SERIAL);
     #endif
 
 #endif
@@ -294,45 +294,6 @@ bool check_ps2(u8 &lx, u8 &ly, u8 &rx, u8 &ry) {
 }
 
 
-void finalise_loop() {
-  ctrlState.c3dBodyPos.y = min(max(mBodyYOffset + mBodyYShift,  0),
-                               MAX_BODY_Y);
-  ctrlState.bGaitType = 5;
-  core->adjustLegPosToBodyHeight();
-  core->loop();
-}
-
-void move_leg(u8 x, u8 y, u8 z) {
-  u8   lx, ly, rx, ry;
-  if (check_ps2(lx, ly, rx, ry) == true) {
-    return;
-  }
-  ctrlState.c3dSingleLeg.x = (x - 128) / 2;     // Left Stick Right/Left
-  ctrlState.c3dSingleLeg.z = (z - 128) / 2;     // Left Stick Up/Down
-  ctrlState.c3dSingleLeg.y = (y - 128) / 2;    // Right Stick Up/Down
-  //ctrlState.bInputTimeDelay = 128 - max( max(abs(x - 128), abs(y - 128)),
-  //                                       abs(z - 128));
-  ctrlState.bInputTimeDelay = 0;
-  finalise_loop();
-}
-
-void move_leg_rf(u8 x, u8 y, u8 z) {
-  ctrlState.bSingleLegCurSel = 4;
-  move_leg(x, y, z);
-}
-
-/*
-void loop() {
-  move_leg_rf(128, 128, 80);
-  move_leg_rf(128, 128, 128);
-  delay(2000);
-  move_leg_rf(128, 128, 178);
-  delay(2000);
-}
-*/
-
-/*
-// single leg ps2 control
 void loop() {
   u8   lx, ly, rx, ry;
   if (check_ps2(lx, ly, rx, ry) == true) {
@@ -353,18 +314,10 @@ void loop() {
     return;
   }
 }
-*/
 
+/*
 // working walk
 void loop() {
-ctrlState.fHexOn = FALSE;
-core->loop();
-return;
-  /*
-  ctrlState.fHexOn = FALSE;
-  core->loop();
-  return;
-  */
   u32  dwButton;
   u8   lx, ly, rx, ry;
   dwButton = input->get(&lx, &ly, &rx, &ry);
@@ -385,24 +338,23 @@ return;
       mModeControl = MODE_WALK;
   }
   if (mModeControl == MODE_WALK) {
-      //printf(F("lx:%d ly:%d rx:%d\n"), (int)lx, (int)ly, (int)rx);
-      ctrlState.sLegLiftHeight = 80;
+      printf(F("lx:%d ly:%d rx:%d\n"), (int)lx, (int)ly, (int)rx);
+      ctrlState.sLegLiftHeight = 90;
       ctrlState.c3dTravelLen.x = -(lx - 128);
       ctrlState.c3dTravelLen.z = (ly - 128);
       ctrlState.c3dTravelLen.y = -(rx - 128)/4;
       ctrlState.c3dTravelLen.x = ctrlState.c3dTravelLen.x / 2;
       ctrlState.c3dTravelLen.z = ctrlState.c3dTravelLen.z / 2;
-      //ctrlState.bInputTimeDelay = 50;
-      ctrlState.bInputTimeDelay = 128 - max( max(abs(lx - 128), abs(ly - 128)),
-                                             abs(rx - 128));
+      ctrlState.bInputTimeDelay = 50;
       ctrlState.c3dBodyPos.y = min(max(mBodyYOffset + mBodyYShift,  0),
                                   MAX_BODY_Y);
-      ctrlState.bGaitType = 1;
+      ctrlState.bGaitType = 5;
       core->adjustLegPosToBodyHeight();
       core->loop();
       return;
   }
 }
+*/
 
 /*
   if (BUTTON_PRESSED(dwButton, INPUT_TOGGLE_SHIFT)) {
