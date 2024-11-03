@@ -162,8 +162,8 @@ static const s16 TBL_INT_POS_Z[] PROGMEM = {
 
 
 // Define some globals for debug information
-bool PhoenixCore::mBoolShowDbgPrompt = TRUE;
-bool PhoenixCore::mBoolDbgOutput     = TRUE;
+bool PhoenixCore::mBoolShowDbgPrompt = FALSE;
+bool PhoenixCore::mBoolDbgOutput     = FALSE;
 bool PhoenixCore::mBoolUpsideDown    = FALSE;
 
 //--------------------------------------------------------------------
@@ -514,9 +514,6 @@ u8 PhoenixCore::loop(void)
 
     } else {
         //Turn the bot off - May need to add ajust here...
-        if (showTerminal())
-            return ret;
-        /*
         if (mPtrCtrlState->fHexOnOld) {
             printf(F("RESET LEGS !!!\n"));
             mCurServoMoveTime = 600;
@@ -527,7 +524,6 @@ u8 PhoenixCore::loop(void)
             //printf(F("Servos shutdown (released)"));
             mServo->release();
         }
-        */
         // We also have a simple debug monitor that allows us to
         // check things. call it here..
 #ifdef CONFIG_TERMINAL
@@ -1191,18 +1187,13 @@ bool PhoenixCore::showTerminal(void)
     }
 
     ich = CONFIG_DBG_SERIAL.available();
-    if (ich == 0) {
-        //printf(F("no serial\n"));
+    if (ich == 0)
         return FALSE;
-    }
 
     for (ich = 0; ich < sizeof(szCmdLine) - 1; ich++) {
         ch = CONFIG_DBG_SERIAL.read();
-        if ((ch == -1) || ((ch >= 10) && (ch <= 15))) {
-            printf(F("break\n"));
+        if ((ch == -1) || ((ch >= 10) && (ch <= 15)))
             break;
-        }
-        printf(F("size %d\n"), ch);
         szCmdLine[ich] = ch;
     }
     szCmdLine[ich] = '\0';    // go ahead and null terminate it...

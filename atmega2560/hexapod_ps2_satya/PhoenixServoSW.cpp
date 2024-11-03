@@ -81,7 +81,6 @@ void PhoenixServoSW::loadServosConfig(void)
 //-----------------------------------------------------------------------------
 void PhoenixServoSW::init(void)
 {
-    printf(F("inside init servosw\n"));
     printf(F("%s\n"), __PRETTY_FUNCTION__);
 
     mBoolServosAttached = FALSE;
