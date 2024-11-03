@@ -58,6 +58,9 @@ typedef struct {
     //[Balance]
     bool        fBalanceMode;
 
+    //[Dance]
+    bool        fDanceMode = false;
+
     //[TIMING]
     u8	    	bInputTimeDelay;    // Delay that depends on the input to get the "sneaking" effect
     u16	        wSpeedControl;      // Adjustible Delay
@@ -133,6 +136,7 @@ private:
     void        doGait(u8 leg, bool fTravelReq);
     void        calcBalOneLeg (u8 leg, long posX, long posZ, long posY);
     void        balanceBody(void);
+    void        dance(void);
     void        getBodyIK(u8 leg, s16 posX, s16 posZ, s16 posY, s16 RotationY, long *x, long *y, long *z);
     u8          getLegIK(u8 leg, s16 IKFeetPosX, s16 IKFeetPosY, s16 IKFeetPosZ);
     void        validateAngles(void);

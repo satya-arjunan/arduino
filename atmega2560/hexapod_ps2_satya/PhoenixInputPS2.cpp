@@ -96,6 +96,9 @@ u32 PhoenixInputPS2::get(u8 *lx, u8 *ly, u8 *rx, u8 *ry)
       if (mPS2.Button(PSB_CROSS)) {
         return PSB_CROSS;
       }
+      if (mPS2.Button(PSB_CIRCLE)) {
+        return PSB_CIRCLE;
+      }
       // D-Up - Button Test
       if (mPS2.Button(PSB_PAD_UP)) {
         printf(F("body up\n"));
@@ -140,12 +143,6 @@ u32 PhoenixInputPS2::get(u8 *lx, u8 *ly, u8 *rx, u8 *ry)
       if (mPS2.Button(PSB_R2)) {
         printf(F("R2\n"));
         return INPUT_OPT_R2;
-      }
-      // O - Circle Button Test
-      if (mPS2.Button(PSB_CIRCLE)) {
-          //case ',':
-        printf(F("single leg\n"));
-        return PSB_CIRCLE;
       }
       if (mPS2.Button(PSB_SQUARE)) {
           //case ',':

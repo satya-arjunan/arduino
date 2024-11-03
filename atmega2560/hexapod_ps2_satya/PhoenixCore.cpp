@@ -366,6 +366,7 @@ u8 PhoenixCore::loop(void)
             return ret;
         }
     }
+    /*
 
     // every 500ms
     if (mTimerStart - mTimerLastCheck > 500) {
@@ -391,12 +392,13 @@ u8 PhoenixCore::loop(void)
         mPtrCtrlState->c3dSingleLeg.x = -mPtrCtrlState->c3dSingleLeg.x;
         mPtrCtrlState->c3dBodyRot.z = -mPtrCtrlState->c3dBodyRot.z;
     }
+    */
 
     //Single leg control
-    allDown = ctrlSingleLeg();
+    //allDown = ctrlSingleLeg();
 
     //doGait
-    doGaitSeq();
+    //doGaitSeq();
 
     //Balance calculations
     mTotalTransX = 0;     //reset values used for calculation of balance
@@ -405,8 +407,9 @@ u8 PhoenixCore::loop(void)
     mTotalXBal1  = 0;
     mTotalYBal1  = 0;
     mTotalZBal1  = 0;
-
-    if (mPtrCtrlState->fBalanceMode) {
+    if (mPtrCtrlState->fDanceMode) {
+      dance();
+    } else if (mPtrCtrlState->fBalanceMode) {
         for (u8 i = 0; i < CONFIG_NUM_LEGS / 2; i++) {    // balance calculations for all Right legs
             calcBalOneLeg(i, -mLegPosXs[i]+mGaitPosXs[i],
                           mLegPosZs[i]+mGaitPosZs[i],
@@ -844,6 +847,123 @@ void PhoenixCore::calcBalOneLeg (u8 leg, long posX, long posZ, long posY)
 
     lAtan = arctan2 (CPR_Z, CPR_Y, NULL);
     mTotalXBal1 += ((lAtan * 1800) / 31415) - 900; //Rotate balance circle 90 deg
+}
+
+
+//--------------------------------------------------------------------
+//[dance]
+void PhoenixCore::dance(void)
+{
+    // Example rhythmic movements for Dance Mode
+    // Rhythm cycle in ms (1 second per cycle)
+    long danceBeat = millis() % 5000;
+    if (danceBeat < 250) {
+        // Move front legs up for "Ice, ice baby"
+        mPtrCtrlState->c3dBodyPos.x = 40;
+        mPtrCtrlState->c3dBodyRot.y = 20;
+    } else if (danceBeat < 500) {
+        // Move middle legs up
+        mPtrCtrlState->c3dBodyPos.x = -40;
+        mPtrCtrlState->c3dBodyRot.y = -20;
+    } else if (danceBeat < 750) {
+        // Move rear legs up
+        mPtrCtrlState->c3dBodyPos.x = 40;
+        mPtrCtrlState->c3dBodyRot.y = 20;
+    } else if (danceBeat < 1000) {
+        // Quick bounce for another "Ice, ice baby"
+        mPtrCtrlState->c3dBodyPos.y = 80;
+        delay(150);
+        mPtrCtrlState->c3dBodyPos.y = 40;
+        delay(150);
+    } else if (danceBeat < 2000) {
+        // "Alright stop" - Freeze
+        mPtrCtrlState->c3dBodyPos.x = 0;
+        mPtrCtrlState->c3dBodyPos.y = 0;
+        mPtrCtrlState->c3dBodyPos.z = 0;
+        mPtrCtrlState->c3dBodyRot.y = 0;
+    } else if (danceBeat < 2500) {
+        // Sway side-to-side for "Collaborate and listen"
+        mPtrCtrlState->c3dBodyPos.x = 30;
+        delay(250);
+        mPtrCtrlState->c3dBodyPos.x = -30;
+        delay(250);
+    } else {
+        // Reset to starting position
+        mPtrCtrlState->c3dBodyPos.x = 0;
+        mPtrCtrlState->c3dBodyRot.y = 0;
+    }
+    // Override gait sequence and balance calculation
+    // You may also want to add a delay for smoother movement
+    delay(50);
+    // Reset every 60 seconds (approx song length)
+    /*
+    long danceBeat = millis() % 60000;
+    // Ice Ice Baby Sequence
+    // Lyrics timing pattern (in milliseconds)
+    if (danceBeat < 250) {
+        // Move front legs up for "Ice, ice baby"
+        mPtrCtrlState->c3dBodyPos.x = 40;
+        mPtrCtrlState->c3dBodyRot.z = 20;
+    } else if (danceBeat < 500) {
+        // Move middle legs up
+        mPtrCtrlState->c3dBodyPos.x = -40;
+        mPtrCtrlState->c3dBodyRot.z = -20;
+    } else if (danceBeat < 750) {
+        // Move rear legs up
+        mPtrCtrlState->c3dBodyPos.x = 40;
+        mPtrCtrlState->c3dBodyRot.z = 20;
+    } else if (danceBeat < 1000) {
+        // Quick bounce for another "Ice, ice baby"
+        mPtrCtrlState->c3dBodyPos.z = 50;
+        delay(150);
+        mPtrCtrlState->c3dBodyPos.z = -50;
+        delay(150);
+    } else if (danceBeat < 2000) {
+        // "Alright stop" - Freeze
+        mPtrCtrlState->c3dBodyPos.x = 0;
+        mPtrCtrlState->c3dBodyPos.y = 0;
+        mPtrCtrlState->c3dBodyPos.z = 0;
+        mPtrCtrlState->c3dBodyRot.z = 0;
+    } else if (danceBeat < 2500) {
+        // Sway side-to-side for "Collaborate and listen"
+        mPtrCtrlState->c3dBodyPos.x = 30;
+        delay(250);
+        mPtrCtrlState->c3dBodyPos.x = -30;
+        delay(250);
+    } else if (danceBeat < 4000) {
+        // Larger upward tilt for "Ice is back with my brand new invention"
+        mPtrCtrlState->c3dBodyRot.x = 25;
+        delay(300);
+        mPtrCtrlState->c3dBodyRot.x = -25;
+        delay(300);
+    } else if (danceBeat < 5000) {
+        // Strong leg extension for "Flow like a harpoon daily and nightly"
+        mPtrCtrlState->c3dBodyPos.z = 60;
+        delay(250);
+        mPtrCtrlState->c3dBodyPos.z = -60;
+        delay(250);
+    } else if (danceBeat < 6000) {
+        // Another "Ice, ice baby" bounce
+        mPtrCtrlState->c3dBodyPos.z = 50;
+        delay(150);
+        mPtrCtrlState->c3dBodyPos.z = -50;
+        delay(150);
+    } else if (danceBeat < 8000) {
+        // Quick rotational movement for "To the extreme"
+        mPtrCtrlState->c3dBodyRot.z = 30;
+        delay(100);
+        mPtrCtrlState->c3dBodyRot.z = -30;
+        delay(100);
+    } else {
+        // Reset to starting position after each sequence
+        mPtrCtrlState->c3dBodyPos.x = 0;
+        mPtrCtrlState->c3dBodyPos.y = 0;
+        mPtrCtrlState->c3dBodyPos.z = 0;
+        mPtrCtrlState->c3dBodyRot.x = 0;
+        mPtrCtrlState->c3dBodyRot.z = 0;
+    }*/
+    // Repeat for each verse section or add new timed moves for the rest of the lyrics.
+    // Additional patterns can follow this approach for each notable lyric.
 }
 
 //--------------------------------------------------------------------

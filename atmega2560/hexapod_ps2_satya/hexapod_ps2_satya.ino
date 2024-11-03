@@ -46,7 +46,8 @@ enum {
     MODE_WALK = 0,
     MODE_TRANSLATE,
     MODE_ROTATE,
-    MODE_SINGLE_LEG
+    MODE_SINGLE_LEG,
+    MODE_DANCE
 };
 
 PhoenixCore  *core;
@@ -373,8 +374,13 @@ void loop() {
     core->loop();
     return;
   }
+  if (BUTTON_PRESSED(dwButton, PSB_CIRCLE)) {
+    mModeControl = MODE_DANCE;
+    ctrlState.fDanceMode = TRUE;
+  }
   if (BUTTON_PRESSED(dwButton, PSB_SQUARE)) {
-      mModeControl = MODE_WALK;
+    mModeControl = MODE_WALK;
+    ctrlState.fDanceMode = FALSE;
   }
   if (mModeControl == MODE_WALK) {
       //printf(F("lx:%d ly:%d rx:%d\n"), (int)lx, (int)ly, (int)rx);
@@ -393,6 +399,10 @@ void loop() {
       core->adjustLegPosToBodyHeight();
       core->loop();
       return;
+  }
+  if (mModeControl == MODE_DANCE) {
+    core->loop();
+    return;
   }
 }
 
