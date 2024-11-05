@@ -367,6 +367,7 @@ u8 PhoenixCore::loop(void)
         }
     }
 
+    /*
     // every 500ms
     if (mTimerStart - mTimerLastCheck > 500) {
         mCurVolt = mServo->getBattVolt();
@@ -384,13 +385,7 @@ u8 PhoenixCore::loop(void)
             mVoltWarnBeepCnt = 0;
         }
     }
-
-    if (mBoolUpsideDown) {
-        mPtrCtrlState->c3dTravelLen.x = -mPtrCtrlState->c3dTravelLen.x;
-        mPtrCtrlState->c3dBodyPos.x = -mPtrCtrlState->c3dBodyPos.x;
-        mPtrCtrlState->c3dSingleLeg.x = -mPtrCtrlState->c3dSingleLeg.x;
-        mPtrCtrlState->c3dBodyRot.z = -mPtrCtrlState->c3dBodyRot.z;
-    }
+    */
 
     //Single leg control
     allDown = ctrlSingleLeg();
@@ -407,20 +402,7 @@ u8 PhoenixCore::loop(void)
     mTotalZBal1  = 0;
     if (mPtrCtrlState->fDanceMode) {
       dance();
-    } else if (mPtrCtrlState->fBalanceMode) {
-        for (u8 i = 0; i < CONFIG_NUM_LEGS / 2; i++) {    // balance calculations for all Right legs
-            calcBalOneLeg(i, -mLegPosXs[i]+mGaitPosXs[i],
-                          mLegPosZs[i]+mGaitPosZs[i],
-                          (mLegPosYs[i]-(s16)pgm_read_word(&TBL_INT_POS_Y[i]))+mGaitPosYs[i]);
-        }
-
-        for (u8 i = CONFIG_NUM_LEGS / 2; i < CONFIG_NUM_LEGS; i++) {    // balance calculations for all Right legs
-            calcBalOneLeg(i, mLegPosXs[i]+mGaitPosXs[i],
-                          mLegPosZs[i]+mGaitPosZs[i],
-                          (mLegPosYs[i]-(s16)pgm_read_word(&TBL_INT_POS_Y[i]))+mGaitPosYs[i]);
-        }
-        balanceBody();
-    }
+    } 
 
     //Do IK for all Right legs
     for (u8 i = 0; i < CONFIG_NUM_LEGS / 2; i++) {
@@ -448,12 +430,6 @@ u8 PhoenixCore::loop(void)
         ret |= getLegIK(i, mLegPosXs[i]+mPtrCtrlState->c3dBodyPos.x-lBodyX+mGaitPosXs[i] - mTotalTransX,
                        mLegPosYs[i]+mPtrCtrlState->c3dBodyPos.y-lBodyY+mGaitPosYs[i] - mTotalTransY,
                        mLegPosZs[i]+mPtrCtrlState->c3dBodyPos.z-lBodyZ+mGaitPosZs[i] - mTotalTransZ);
-    }
-
-    if (mBoolUpsideDown) { //Need to set them back for not messing with the smoothControl
-        mPtrCtrlState->c3dBodyPos.x = -mPtrCtrlState->c3dBodyPos.x;
-        mPtrCtrlState->c3dSingleLeg.x = -mPtrCtrlState->c3dSingleLeg.x;
-        mPtrCtrlState->c3dBodyRot.z = -mPtrCtrlState->c3dBodyRot.z;
     }
 
     //Check mechanical limits
@@ -514,19 +490,9 @@ u8 PhoenixCore::loop(void)
 
 
     } else {
-        //Turn the bot off - May need to add ajust here...
-        if (mPtrCtrlState->fHexOnOld) {
-            printf(F("RESET LEGS !!!\n"));
-            mCurServoMoveTime = 600;
-            updateServos();
-            mServo->commit(mCurServoMoveTime);
-            delay(600);
-        } else {
-            //printf(F("Servos shutdown (released)"));
+        if (!mPtrCtrlState->fHexOnOld) {
             mServo->release();
         }
-        // We also have a simple debug monitor that allows us to
-        // check things. call it here..
 #ifdef CONFIG_TERMINAL
         if (showTerminal())
             return ret;
@@ -872,7 +838,9 @@ void PhoenixCore::dance_a() {
 
 void PhoenixCore::dance(void)
 {
+    mPtrCtrlState->c3dBodyPos.y = 20;
     dance_a();
+    mPtrCtrlState->c3dBodyPos.y = 20;
     // Override gait sequence and balance calculation
     // You may also want to add a delay for smoother movement
     delay(50);
