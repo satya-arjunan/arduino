@@ -317,6 +317,14 @@ void move_leg(u8 x, u8 y, u8 z) {
   finalise_loop();
 }
 
+/*
+0: rr
+1: rm
+2: rf
+3: lr
+4: lm
+5: lf
+*/
 void move_leg_rf(u8 x, u8 y, u8 z) {
   ctrlState.bSingleLegCurSel = 4;
   move_leg(x, y, z);

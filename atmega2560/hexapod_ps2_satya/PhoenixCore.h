@@ -137,6 +137,7 @@ private:
     void        calcBalOneLeg (u8 leg, long posX, long posZ, long posY);
     void        balanceBody(void);
     void        dance(void);
+    void        dance_a(void);
     void        getBodyIK(u8 leg, s16 posX, s16 posZ, s16 posY, s16 RotationY, long *x, long *y, long *z);
     u8          getLegIK(u8 leg, s16 IKFeetPosX, s16 IKFeetPosY, s16 IKFeetPosZ);
     void        validateAngles(void);

@@ -366,7 +366,6 @@ u8 PhoenixCore::loop(void)
             return ret;
         }
     }
-    /*
 
     // every 500ms
     if (mTimerStart - mTimerLastCheck > 500) {
@@ -392,13 +391,12 @@ u8 PhoenixCore::loop(void)
         mPtrCtrlState->c3dSingleLeg.x = -mPtrCtrlState->c3dSingleLeg.x;
         mPtrCtrlState->c3dBodyRot.z = -mPtrCtrlState->c3dBodyRot.z;
     }
-    */
 
     //Single leg control
-    //allDown = ctrlSingleLeg();
+    allDown = ctrlSingleLeg();
 
     //doGait
-    //doGaitSeq();
+    doGaitSeq();
 
     //Balance calculations
     mTotalTransX = 0;     //reset values used for calculation of balance
@@ -849,49 +847,32 @@ void PhoenixCore::calcBalOneLeg (u8 leg, long posX, long posZ, long posY)
     mTotalXBal1 += ((lAtan * 1800) / 31415) - 900; //Rotate balance circle 90 deg
 }
 
-
 //--------------------------------------------------------------------
 //[dance]
-void PhoenixCore::dance(void)
-{
-    // Example rhythmic movements for Dance Mode
-    // Rhythm cycle in ms (1 second per cycle)
-    long danceBeat = millis() % 5000;
+void PhoenixCore::dance_a() {
+    long danceBeat = millis() % 1000; // reset/loop every 1 s
     if (danceBeat < 250) {
         // Move front legs up for "Ice, ice baby"
         mPtrCtrlState->c3dBodyPos.x = 40;
-        mPtrCtrlState->c3dBodyRot.y = 20;
+        mPtrCtrlState->c3dBodyRot.z = 20;
     } else if (danceBeat < 500) {
         // Move middle legs up
         mPtrCtrlState->c3dBodyPos.x = -40;
-        mPtrCtrlState->c3dBodyRot.y = -20;
+        mPtrCtrlState->c3dBodyRot.z = -20;
     } else if (danceBeat < 750) {
         // Move rear legs up
         mPtrCtrlState->c3dBodyPos.x = 40;
-        mPtrCtrlState->c3dBodyRot.y = 20;
-    } else if (danceBeat < 1000) {
-        // Quick bounce for another "Ice, ice baby"
-        mPtrCtrlState->c3dBodyPos.y = 80;
-        delay(150);
-        mPtrCtrlState->c3dBodyPos.y = 40;
-        delay(150);
-    } else if (danceBeat < 2000) {
-        // "Alright stop" - Freeze
-        mPtrCtrlState->c3dBodyPos.x = 0;
-        mPtrCtrlState->c3dBodyPos.y = 0;
-        mPtrCtrlState->c3dBodyPos.z = 0;
-        mPtrCtrlState->c3dBodyRot.y = 0;
-    } else if (danceBeat < 2500) {
-        // Sway side-to-side for "Collaborate and listen"
-        mPtrCtrlState->c3dBodyPos.x = 30;
-        delay(250);
-        mPtrCtrlState->c3dBodyPos.x = -30;
-        delay(250);
+        mPtrCtrlState->c3dBodyRot.z = 20;
     } else {
         // Reset to starting position
         mPtrCtrlState->c3dBodyPos.x = 0;
-        mPtrCtrlState->c3dBodyRot.y = 0;
+        mPtrCtrlState->c3dBodyRot.z = 0;
     }
+}
+
+void PhoenixCore::dance(void)
+{
+    dance_a();
     // Override gait sequence and balance calculation
     // You may also want to add a delay for smoother movement
     delay(50);
