@@ -384,6 +384,7 @@ void loop() {
   }
   if (BUTTON_PRESSED(dwButton, PSB_CIRCLE)) {
     mModeControl = MODE_DANCE;
+    core->reset_time();
     ctrlState.fDanceMode = TRUE;
   }
   if (BUTTON_PRESSED(dwButton, PSB_SQUARE)) {

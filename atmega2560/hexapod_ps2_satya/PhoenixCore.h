@@ -122,6 +122,7 @@ private:
     //[TIMING]
     u32         mTimerStart;    //Start time of the calculation cycles
     u32         mTimerLastCheck;
+    u32         mDanceTime;
 
     PhoenixServo  *mServo;
     CTRL_STATE    *mPtrCtrlState;
@@ -138,6 +139,11 @@ private:
     void        balanceBody(void);
     void        dance(void);
     void        dance_a(void);
+    void        dance_relax(void);
+    void        dance_forward_backward(void);
+    void        dance_up_down(void);
+    void        select_rf();
+    void        select_lf();
     void        getBodyIK(u8 leg, s16 posX, s16 posZ, s16 posY, s16 RotationY, long *x, long *y, long *z);
     u8          getLegIK(u8 leg, s16 IKFeetPosX, s16 IKFeetPosY, s16 IKFeetPosZ);
     void        validateAngles(void);
@@ -170,6 +176,7 @@ public:
     void        init(void);
     u8          loop(void);
     void        initCtrl(void);
+    void        reset_time();
     void        selectGait(u8 bGaitType);
     void        adjustLegPosToBodyHeight(void);
     u8          getBattLevel(void)     { return mCurVolt; }

@@ -834,13 +834,102 @@ void PhoenixCore::dance_a() {
         mPtrCtrlState->c3dBodyPos.x = 0;
         mPtrCtrlState->c3dBodyRot.z = 0;
     }
+    mPtrCtrlState->c3dBodyPos.y = 20;
+    adjustLegPosToBodyHeight();
+}
+
+
+/*
+0: rr
+1: rm
+2: rf
+3: lr
+4: lm
+5: lf
+z: coxa
+x: femur
+y: tibia
+*/
+void PhoenixCore::select_rf() {
+  mPtrCtrlState->bSingleLegCurSel = 2;
+}
+
+void PhoenixCore::select_lf() {
+  mPtrCtrlState->bSingleLegCurSel = 5;
+}
+
+void PhoenixCore::dance_forward_backward() {
+  long danceBeat = (millis()-mDanceTime) % 6000; // reset/loop every 1 s
+  u8 lx = 50;
+  u8 ly = 0;
+  u8 rx = 128;
+  s16 bodyYOffset = 40;
+  s16 bodyYShift = 0;
+  if (danceBeat < 3000) {
+    mPtrCtrlState->c3dTravelLen.x = 0;
+    mPtrCtrlState->c3dTravelLen.z = -100;
+    mPtrCtrlState->bInputTimeDelay = 50;
+  }
+  else {
+    mPtrCtrlState->c3dTravelLen.x = 0;
+    mPtrCtrlState->c3dTravelLen.z = 100;
+    mPtrCtrlState->bInputTimeDelay = 50;
+  }
+}
+
+void PhoenixCore::reset_time() {
+  mDanceTime = millis();
+}
+
+void PhoenixCore::dance_relax() {
+  long danceBeat = (millis()-mDanceTime) % 1000; // reset/loop every 1 s
+  if (danceBeat < 250) {
+    select_rf();
+    mPtrCtrlState->c3dSingleLeg.y = -20;
+  }
+  else if (danceBeat < 500) {
+    select_rf();
+    mPtrCtrlState->c3dSingleLeg.y = -40;
+  }
+  else if (danceBeat < 750) {
+    select_lf();
+    mPtrCtrlState->c3dSingleLeg.y = -20;
+  }
+  else {
+    select_lf();
+    mPtrCtrlState->c3dSingleLeg.y = 0;
+  }
+}
+
+void PhoenixCore::dance_up_down() {
+  long danceBeat = (millis()-mDanceTime) % 1000; // reset/loop every 1 s
+  if (danceBeat < 250) {
+    mPtrCtrlState->c3dBodyPos.y = 20;
+  }
+  else if (danceBeat < 500) {
+    mPtrCtrlState->c3dBodyPos.y = 40;
+  }
+  else if (danceBeat < 750) {
+    mPtrCtrlState->c3dBodyPos.y = 60;
+  }
+  else {
+    mPtrCtrlState->c3dBodyPos.y = 0;
+  }
 }
 
 void PhoenixCore::dance(void)
 {
-    mPtrCtrlState->c3dBodyPos.y = 20;
-    dance_a();
-    mPtrCtrlState->c3dBodyPos.y = 20;
+    long danceBeat = (millis()-mDanceTime) % 60000; // reset/loop every 1 s
+    if (danceBeat < 8000) {
+      dance_relax();
+    }
+    else if (danceBeat < 16000) {
+      dance_up_down();
+    }
+    else if (danceBeat < 24000) {
+      dance_forward_backward();
+    }
+    //dance_a();
     // Override gait sequence and balance calculation
     // You may also want to add a delay for smoother movement
     delay(50);
