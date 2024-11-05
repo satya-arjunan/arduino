@@ -138,10 +138,13 @@ private:
     void        calcBalOneLeg (u8 leg, long posX, long posZ, long posY);
     void        balanceBody(void);
     void        dance(void);
-    void        dance_a(void);
+    void        dance_ice(void);
     void        dance_relax(void);
     void        dance_forward_backward(void);
+    void        dance_side_to_side(void);
     void        dance_up_down(void);
+    void        dance_stop(void);
+    void        dance_spin(void);
     void        select_rf();
     void        select_lf();
     void        getBodyIK(u8 leg, s16 posX, s16 posZ, s16 posY, s16 RotationY, long *x, long *y, long *z);

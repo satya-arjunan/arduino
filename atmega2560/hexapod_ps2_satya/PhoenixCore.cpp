@@ -815,7 +815,11 @@ void PhoenixCore::calcBalOneLeg (u8 leg, long posX, long posZ, long posY)
 
 //--------------------------------------------------------------------
 //[dance]
-void PhoenixCore::dance_a() {
+void PhoenixCore::dance_ice() {
+    mPtrCtrlState->c3dBodyPos.y = 20;
+    mPtrCtrlState->c3dTravelLen.y = 0;
+    mPtrCtrlState->c3dTravelLen.x = 0;
+    mPtrCtrlState->c3dTravelLen.z = 0;
     long danceBeat = millis() % 1000; // reset/loop every 1 s
     if (danceBeat < 250) {
         // Move front legs up for "Ice, ice baby"
@@ -834,8 +838,7 @@ void PhoenixCore::dance_a() {
         mPtrCtrlState->c3dBodyPos.x = 0;
         mPtrCtrlState->c3dBodyRot.z = 0;
     }
-    mPtrCtrlState->c3dBodyPos.y = 20;
-    adjustLegPosToBodyHeight();
+    delay(50);
 }
 
 
@@ -859,21 +862,66 @@ void PhoenixCore::select_lf() {
 }
 
 void PhoenixCore::dance_forward_backward() {
-  long danceBeat = (millis()-mDanceTime) % 6000; // reset/loop every 1 s
+  mPtrCtrlState->c3dBodyPos.x = 0;
+  mPtrCtrlState->c3dBodyRot.z = 0;
+  long danceBeat = (millis()-mDanceTime) % 8000; // reset/loop every 1 s
   u8 lx = 50;
   u8 ly = 0;
   u8 rx = 128;
   s16 bodyYOffset = 40;
   s16 bodyYShift = 0;
-  if (danceBeat < 3000) {
+  mPtrCtrlState->c3dBodyPos.y = 40;
+  if (danceBeat < 4000) {
     mPtrCtrlState->c3dTravelLen.x = 0;
-    mPtrCtrlState->c3dTravelLen.z = -100;
-    mPtrCtrlState->bInputTimeDelay = 50;
+    mPtrCtrlState->c3dTravelLen.z = -60;
+    mPtrCtrlState->bInputTimeDelay = 30;
   }
   else {
     mPtrCtrlState->c3dTravelLen.x = 0;
-    mPtrCtrlState->c3dTravelLen.z = 100;
-    mPtrCtrlState->bInputTimeDelay = 50;
+    mPtrCtrlState->c3dTravelLen.z = 60;
+    mPtrCtrlState->bInputTimeDelay = 30;
+  }
+}
+
+void PhoenixCore::dance_side_to_side() {
+  long danceBeat = (millis()-mDanceTime) % 6000; // reset/loop every 1 s
+  u8 lx = 50;
+  u8 ly = 0;
+  u8 rx = 128;
+  s16 bodyYOffset = 50;
+  s16 bodyYShift = 0;
+  mPtrCtrlState->c3dBodyPos.y = 40;
+  if (danceBeat < 3000) {
+    mPtrCtrlState->c3dTravelLen.x = -35;
+    mPtrCtrlState->c3dTravelLen.z = 0;
+    mPtrCtrlState->bInputTimeDelay = 30;
+  }
+  else {
+    mPtrCtrlState->c3dTravelLen.x = 35;
+    mPtrCtrlState->c3dTravelLen.z = 0;
+    mPtrCtrlState->bInputTimeDelay = 30;
+  }
+}
+
+void PhoenixCore::dance_spin() {
+  long danceBeat = (millis()-mDanceTime) % 8000; // reset/loop every 1 s
+  u8 lx = 50;
+  u8 ly = 0;
+  u8 rx = 128;
+  s16 bodyYOffset = 20;
+  s16 bodyYShift = 0;
+  mPtrCtrlState->c3dBodyPos.y = 40;
+  if (danceBeat < 4000) {
+    mPtrCtrlState->c3dTravelLen.x = 0;
+    mPtrCtrlState->c3dTravelLen.z = 0;
+    mPtrCtrlState->c3dTravelLen.y = 25;
+    mPtrCtrlState->bInputTimeDelay = 30;
+  }
+  else {
+    mPtrCtrlState->c3dTravelLen.x = 0;
+    mPtrCtrlState->c3dTravelLen.z = 0;
+    mPtrCtrlState->c3dTravelLen.y = -25;
+    mPtrCtrlState->bInputTimeDelay = 30;
   }
 }
 
@@ -882,6 +930,7 @@ void PhoenixCore::reset_time() {
 }
 
 void PhoenixCore::dance_relax() {
+  mPtrCtrlState->c3dBodyPos.y = 40;
   long danceBeat = (millis()-mDanceTime) % 1000; // reset/loop every 1 s
   if (danceBeat < 250) {
     select_rf();
@@ -902,6 +951,11 @@ void PhoenixCore::dance_relax() {
 }
 
 void PhoenixCore::dance_up_down() {
+  mPtrCtrlState->c3dBodyPos.x = 0;
+  mPtrCtrlState->c3dBodyRot.z = 0;
+  mPtrCtrlState->c3dTravelLen.y = 0;
+  mPtrCtrlState->c3dTravelLen.x = 0;
+  mPtrCtrlState->c3dTravelLen.z = 0;
   long danceBeat = (millis()-mDanceTime) % 1000; // reset/loop every 1 s
   if (danceBeat < 250) {
     mPtrCtrlState->c3dBodyPos.y = 20;
@@ -917,9 +971,14 @@ void PhoenixCore::dance_up_down() {
   }
 }
 
+void PhoenixCore::dance_stop() {
+  mPtrCtrlState->c3dTravelLen.x = 0;
+  mPtrCtrlState->c3dTravelLen.z = 0;
+}
+
 void PhoenixCore::dance(void)
 {
-    long danceBeat = (millis()-mDanceTime) % 60000; // reset/loop every 1 s
+    long danceBeat = (millis()-mDanceTime) % 300000; // reset/loop every 1 s
     if (danceBeat < 8000) {
       dance_relax();
     }
@@ -928,6 +987,63 @@ void PhoenixCore::dance(void)
     }
     else if (danceBeat < 24000) {
       dance_forward_backward();
+    }
+    else if (danceBeat < 36000) {
+      dance_side_to_side();
+    }
+    else if (danceBeat < 41000) {
+      dance_stop();
+    }
+    else if (danceBeat < 58000) {
+      dance_spin();
+    }
+    else if (danceBeat < 74000) {
+      dance_ice();
+    }
+    else if (danceBeat < 82000) {
+      dance_up_down();
+    }
+    else if (danceBeat < 89000) {
+      dance_forward_backward();
+    }
+    else if (danceBeat < 101000) {
+      dance_side_to_side();
+    }
+    else if (danceBeat < 109000) {
+      dance_up_down();
+    }
+    else if (danceBeat < 117000) {
+      dance_spin();
+    }
+    else if (danceBeat < 125000) {
+      dance_up_down();
+    }
+    else if (danceBeat < 133000) {
+      dance_forward_backward();
+    }
+    else if (danceBeat < 140000) {
+      dance_side_to_side();
+    }
+    else if (danceBeat < 156000) {
+      dance_ice();
+    }
+    else if (danceBeat < 174000) {
+      dance_forward_backward();
+    }
+    else if (danceBeat < 190000) {
+      dance_up_down();
+    }
+    else if (danceBeat < 206000) {
+      dance_ice();
+    }
+    else if (danceBeat < 210000) {
+      dance_stop();
+    }
+    else if (danceBeat < 226000) {
+      dance_ice();
+    }
+    else {
+      dance_stop();
     }
     //dance_a();
     // Override gait sequence and balance calculation
