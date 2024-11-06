@@ -978,7 +978,7 @@ void PhoenixCore::dance_stop() {
 
 void PhoenixCore::dance(void)
 {
-    long danceBeat = (millis()-mDanceTime) % 300000; // reset/loop every 1 s
+    long danceBeat = (millis()-mDanceTime) % 10000000;
     if (danceBeat < 8000) {
       dance_relax();
     }
